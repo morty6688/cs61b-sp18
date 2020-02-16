@@ -27,9 +27,8 @@ public class ArrayDeque<T> {
         if (isFull()) {
             resize((int) (capacity * 1.5));
         }
-        right = (right + capacity) % capacity;
         items[right] = item;
-        right++;
+        right = (right + 1 + capacity) % capacity;
     }
 
     /** Returns true if deque is empty, false otherwise. */
@@ -71,8 +70,9 @@ public class ArrayDeque<T> {
      * exists, returns null.
      */
     public T removeFirst() {
-        if (isEmpty())
+        if (isEmpty()) {
             return null;
+        }
         T res = items[left];
         left = (left + 1) % capacity;
         if (isLowUsageRate()) {
@@ -86,8 +86,9 @@ public class ArrayDeque<T> {
      * exists, returns null.
      */
     public T removeLast() {
-        if (isEmpty())
+        if (isEmpty()) {
             return null;
+        }
         right = (right - 1 + capacity) % capacity;
         T res = items[right];
         if (isLowUsageRate()) {

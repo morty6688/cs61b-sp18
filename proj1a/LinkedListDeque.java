@@ -69,8 +69,9 @@ public class LinkedListDeque<T> {
      * exists, returns null.
      */
     public T removeFirst() {
-        if (isEmpty())
+        if (isEmpty()) {
             return null;
+        }
         T res = sentinel.next.item;
         sentinel.next = sentinel.next.next;
         sentinel.next.prev = sentinel;
@@ -83,8 +84,9 @@ public class LinkedListDeque<T> {
      * exists, returns null.
      */
     public T removeLast() {
-        if (isEmpty())
+        if (isEmpty()) {
             return null;
+        }
         T res = sentinel.prev.item;
         sentinel.prev = sentinel.prev.prev;
         sentinel.prev.next = sentinel;
@@ -100,7 +102,7 @@ public class LinkedListDeque<T> {
         if (size < index) {
             return null;
         }
-        Node p = sentinel;
+        Node p = sentinel.next;
         while (index > 0) {
             p = p.next;
             index--;
