@@ -83,25 +83,25 @@ public class ArrayDequeTest {
         for (int i = 0; i < 500; i++) {
             int flag = (int) (4 * Math.random());
             switch (flag) {
-            case 0:
-                ad.addFirst(i);
-                s++;
-                break;
-            case 1:
-                ad.addLast(i);
-                s++;
-                break;
-            case 2:
-                Integer res = ad.removeFirst();
-                if (res != null) {
-                    s--;
-                }
-                break;
-            default:
-                Integer res2 = ad.removeLast();
-                if (res2 != null) {
-                    s--;
-                }
+                case 0:
+                    ad.addFirst(i);
+                    s++;
+                    break;
+                case 1:
+                    ad.addLast(i);
+                    s++;
+                    break;
+                case 2:
+                    Integer res = ad.removeFirst();
+                    if (res != null) {
+                        s--;
+                    }
+                    break;
+                default:
+                    Integer res2 = ad.removeLast();
+                    if (res2 != null) {
+                        s--;
+                    }
             }
             if (s == 0) {
                 System.out.println(ad.isEmpty());
