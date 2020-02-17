@@ -1,13 +1,13 @@
-import static org.junit.Assert.*;
-
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class IntListTest {
 
     /**
-     * Example test that verifies correctness of the IntList.of static
-     * method. The main point of this is to convince you that
-     * assertEquals knows how to handle IntLists just fine.
+     * Example test that verifies correctness of the IntList.of static method. The
+     * main point of this is to convince you that assertEquals knows how to handle
+     * IntLists just fine.
      */
 
     @Test
@@ -28,13 +28,12 @@ public class IntListTest {
     }
 
     /**
-     * Do not use the new keyword in your tests. You can create
-     * lists using the handy IntList.of method.
+     * Do not use the new keyword in your tests. You can create lists using the
+     * handy IntList.of method.
      * <p>
-     * Make sure to include test cases involving lists of various sizes
-     * on both sides of the operation. That includes the empty list, which
-     * can be instantiated, for example, with
-     * IntList empty = IntList.of().
+     * Make sure to include test cases involving lists of various sizes on both
+     * sides of the operation. That includes the empty list, which can be
+     * instantiated, for example, with IntList empty = IntList.of().
      * <p>
      * Keep in mind that dcatenate(A, B) is NOT required to leave A untouched.
      * Anything can happen to A.
@@ -66,8 +65,14 @@ public class IntListTest {
         assertEquals(IntList.of(1, 2, 3), A);
     }
 
-    /** If you're running this from the command line, you'll need
-      * to add a main method. See ArithmeticTest.java for an
-      * example. */
+    @Test
+    public void testReverse() {
+        IntList L = IntList.of(1, 2, 3);
+        IntList L2 = IntList.of(1, 2, 3);
+        IntList res = IntList.of(3, 2, 1);
+        assertEquals(res, IntList.reverse(L));
+        assertNotEquals(L2, L);
+        assertNull(IntList.reverse(null));
+    }
 
 }
