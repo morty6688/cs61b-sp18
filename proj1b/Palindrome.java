@@ -27,18 +27,18 @@ public class Palindrome {
         return true;
     }
 
-    public boolean isPalindromeRecursive(String word) {
-        Deque<Character> d = wordToDeque(word);
-        return isPalindromeRecursive(d);
-    }
+    // public boolean isPalindromeRecursive(String word) {
+    //     Deque<Character> d = wordToDeque(word);
+    //     return isPalindromeRecursive(d);
+    // }
 
-    private boolean isPalindromeRecursive(Deque<Character> d) {
-        if (d.size() <= 1) {
-            return true;
-        }
-        if (d.removeFirst() != d.removeLast()) {
-            return false;
-        }
-        return isPalindromeRecursive(d);
-    }
+    // private boolean isPalindromeRecursive(Deque<Character> d) {
+    //     if (d.size() <= 1) {
+    //         return true;
+    //     }
+    //     if (d.removeFirst() != d.removeLast()) {
+    //         return false;
+    //     }
+    //     return isPalindromeRecursive(d);
+    // }
 }

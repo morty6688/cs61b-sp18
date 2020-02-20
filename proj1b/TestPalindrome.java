@@ -46,14 +46,14 @@ public class TestPalindrome {
         assertFalse(palindrome.isPalindrome("noon", cc));
     }
 
-    @Test
-    public void testIsPalindromeRecursive() {
-        assertTrue(palindrome.isPalindromeRecursive(""));
-        assertTrue(palindrome.isPalindromeRecursive("a"));
-        assertTrue(palindrome.isPalindromeRecursive("noon"));
-        assertFalse(palindrome.isPalindromeRecursive("horse"));
-        assertFalse(palindrome.isPalindromeRecursive("aaab"));
-        assertFalse(palindrome.isPalindromeRecursive("abA"));
-    }
+    // @Test
+    // public void testIsPalindromeRecursive() {
+    //     assertTrue(palindrome.isPalindromeRecursive(""));
+    //     assertTrue(palindrome.isPalindromeRecursive("a"));
+    //     assertTrue(palindrome.isPalindromeRecursive("noon"));
+    //     assertFalse(palindrome.isPalindromeRecursive("horse"));
+    //     assertFalse(palindrome.isPalindromeRecursive("aaab"));
+    //     assertFalse(palindrome.isPalindromeRecursive("abA"));
+    // }
 
 }
