@@ -1,4 +1,7 @@
-/** A client that uses the synthesizer package to replicate a plucked guitar string sound */
+/**
+ * A client that uses the synthesizer package to replicate a plucked guitar
+ * string sound
+ */
 public class GuitarHeroLite {
     private static final double CONCERT_A = 440.0;
     private static final double CONCERT_C = CONCERT_A * Math.pow(2, 3.0 / 12.0);
@@ -20,16 +23,15 @@ public class GuitarHeroLite {
                 }
             }
 
-        /* compute the superposition of samples */
+            /* compute the superposition of samples */
             double sample = stringA.sample() + stringC.sample();
 
-        /* play the sample on standard audio */
+            /* play the sample on standard audio */
             StdAudio.play(sample);
 
-        /* advance the simulation of each guitar string by one step */
+            /* advance the simulation of each guitar string by one step */
             stringA.tic();
             stringC.tic();
         }
     }
 }
-
