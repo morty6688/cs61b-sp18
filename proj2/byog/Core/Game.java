@@ -22,8 +22,45 @@ public class Game {
     public void playWithKeyboard() {
         TERenderer ter = new TERenderer();
         ter.initialize(WIDTH, HEIGHT);
-        // initialize tiles
+
         TETile[][] world = new TETile[WIDTH][HEIGHT];
+        initializeWorld(world);
+
+        Random r = new Random();
+
+        Stack<Position> stack = new Stack<>();
+        Position startPoint = decideStartPoint(r);
+        world[startPoint.x][startPoint.y] = Tileset.START;
+        stack.push(startPoint);
+
+        generateMaze(world, r, stack);
+
+        ter.renderFrame(world);
+    }
+
+    private void generateMaze(TETile[][] world, Random r, Stack<Position> stack) {
+        while (!stack.isEmpty()) {
+            Position existed = stack.peek();
+            Position p = nextPos(r, existed, world);
+            if (p == null) {
+                stack.pop();
+                continue;
+            }
+            world[p.x][p.y] = Tileset.DEVELOPEDFLOOR;
+            if (p.x > existed.x) {
+                world[existed.x + 1][existed.y] = Tileset.DEVELOPEDFLOOR;
+            } else if (p.x < existed.x) {
+                world[existed.x - 1][existed.y] = Tileset.DEVELOPEDFLOOR;
+            } else if (p.y > existed.y) {
+                world[existed.x][existed.y + 1] = Tileset.DEVELOPEDFLOOR;
+            } else if (p.y < existed.y) {
+                world[existed.x][existed.y - 1] = Tileset.DEVELOPEDFLOOR;
+            }
+            stack.push(p);
+        }
+    }
+
+    private void initializeWorld(TETile[][] world) {
         for (int x = 0; x < WIDTH; x++) {
             for (int y = 0; y < HEIGHT; y++) {
                 world[x][y] = Tileset.WALL;
@@ -32,59 +69,23 @@ public class Game {
 
         for (int x = 1; x < WIDTH; x += 2) {
             for (int y = 1; y < HEIGHT; y += 2) {
-                world[x][y] = Tileset.YELLOWFLOOR;
+                world[x][y] = Tileset.UNDEVFLOOR;
             }
         }
-
-        Random r = new Random();
-        Boolean[][] isVisited = new Boolean[WIDTH][HEIGHT];
-        for (int x = 0; x < WIDTH; x++) {
-            for (int y = 0; y < HEIGHT; y++) {
-                isVisited[x][y] = false;
-            }
-        }
-        Stack<Position> stack = new Stack<>();
-
-        Position startPoint = decideStartPoint(r);
-        world[startPoint.x][startPoint.y] = Tileset.START;
-        isVisited[startPoint.x][startPoint.y] = true;
-        stack.push(startPoint);
-        while (!stack.isEmpty()) {
-            Position existed = stack.peek();
-            Position p = nextPos(r, existed, isVisited);
-            if (p == null) {
-                stack.pop();
-                continue;
-            }
-            isVisited[p.x][p.y] = true;
-            world[p.x][p.y] = Tileset.REDFLOOR;
-            if (p.x > existed.x) {
-                world[existed.x + 1][existed.y] = Tileset.REDFLOOR;
-            } else if (p.x < existed.x) {
-                world[existed.x - 1][existed.y] = Tileset.REDFLOOR;
-            } else if (p.y > existed.y) {
-                world[existed.x][existed.y + 1] = Tileset.REDFLOOR;
-            } else if (p.y < existed.y) {
-                world[existed.x][existed.y - 1] = Tileset.REDFLOOR;
-            }
-            stack.push(p);
-        }
-
-        ter.renderFrame(world);
     }
 
-    private Position nextPos(Random r, Position p, Boolean[][] isVisited) {
+    private Position nextPos(Random r, Position p, TETile[][] world) {
         List<Position> possiblePos = new ArrayList<>();
-        if (p.x + 2 >= 0 && p.x + 2 < WIDTH && isVisited[p.x + 2][p.y] == false) {
+        if (p.x + 2 >= 0 && p.x + 2 < WIDTH && world[p.x + 2][p.y] == Tileset.UNDEVFLOOR) {
             possiblePos.add(new Position(p.x + 2, p.y));
         }
-        if (p.x - 2 >= 0 && p.x - 2 < WIDTH && isVisited[p.x - 2][p.y] == false) {
+        if (p.x - 2 >= 0 && p.x - 2 < WIDTH && world[p.x - 2][p.y] == Tileset.UNDEVFLOOR) {
             possiblePos.add(new Position(p.x - 2, p.y));
         }
-        if (p.y + 2 >= 0 && p.y + 2 < HEIGHT && isVisited[p.x][p.y + 2] == false) {
+        if (p.y + 2 >= 0 && p.y + 2 < HEIGHT && world[p.x][p.y + 2] == Tileset.UNDEVFLOOR) {
             possiblePos.add(new Position(p.x, p.y + 2));
         }
-        if (p.y - 2 >= 0 && p.y - 2 < HEIGHT && isVisited[p.x][p.y - 2] == false) {
+        if (p.y - 2 >= 0 && p.y - 2 < HEIGHT && world[p.x][p.y - 2] == Tileset.UNDEVFLOOR) {
             possiblePos.add(new Position(p.x, p.y - 2));
         }
         if (possiblePos.isEmpty()) {
@@ -94,70 +95,32 @@ public class Game {
         return possiblePos.get(selector);
     }
 
-    // private void dfs(TETile[][] world, int x, int y, int step, int path) {
-    // Random r = new Random();
-    // int selector = RandomUtils.uniform(r, 0, 4);
-    // if (path == 0) {
-    // if (x + step < 0 || x + step >= WIDTH || world[x + step][y] ==
-    // Tileset.REDFLOOR) {
-    // return;
-    // }
-    // world[x + step][y] = Tileset.REDFLOOR;
-    // world[x + 1][y] = Tileset.REDFLOOR;
-    // dfs(world, x + step, y, step, selector);
-    // } else if (path == 1) {
-    // if (x - step < 0 || x - step >= WIDTH || world[x - step][y] ==
-    // Tileset.REDFLOOR) {
-    // return;
-    // }
-    // world[x - step][y] = Tileset.REDFLOOR;
-    // world[x - 1][y] = Tileset.REDFLOOR;
-    // dfs(world, x - step, y, step, selector);
-    // } else if (path == 2) {
-    // if (y + step < 0 || y + step <= HEIGHT || world[x][y + step] ==
-    // Tileset.REDFLOOR) {
-    // return;
-    // }
-    // world[x][y + step] = Tileset.REDFLOOR;
-    // world[x][y + 1] = Tileset.REDFLOOR;
-    // dfs(world, x, y + step, step, selector);
-    // } else {
-    // if (y - step < 0 || y - step <= HEIGHT || world[x][y - step] ==
-    // Tileset.REDFLOOR) {
-    // return;
-    // }
-    // world[x][y - step] = Tileset.REDFLOOR;
-    // world[x][y - 1] = Tileset.REDFLOOR;
-    // dfs(world, x, y - step, step, selector);
-    // }
-    // }
-
     private Position decideStartPoint(Random r) {
         Position p = new Position();
         int selector = RandomUtils.uniform(r, 0, 4);
         switch (selector) {
             case 0:
                 p.x = 1;
-                p.y = decideXOrY(r, HEIGHT - 1);
+                p.y = decideXOrY(r, 1, HEIGHT - 1);
                 break;
             case 1:
                 p.y = 1;
-                p.x = decideXOrY(r, WIDTH - 1);
+                p.x = decideXOrY(r, 1, WIDTH - 1);
                 break;
             case 2:
                 p.x = WIDTH - 2;
-                p.y = decideXOrY(r, HEIGHT - 1);
+                p.y = decideXOrY(r, 1, HEIGHT - 1);
                 break;
             case 3:
                 p.y = HEIGHT - 2;
-                p.x = decideXOrY(r, WIDTH - 1);
+                p.x = decideXOrY(r, 1, WIDTH - 1);
                 break;
         }
         return p;
     }
 
-    private int decideXOrY(Random r, int edge) {
-        int x = RandomUtils.uniform(r, 1, edge);
+    private int decideXOrY(Random r, int start, int end) {
+        int x = RandomUtils.uniform(r, start, end);
         if (x % 2 == 0) {
             if (RandomUtils.bernoulli(r)) {
                 x++;
