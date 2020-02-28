@@ -27,8 +27,8 @@ public class Game {
         initializeWorld(world);
 
         Random r = new Random();
-        Stack<Position> stack = new Stack<>();
 
+        Stack<Position> stack = new Stack<>();
         Position startPoint = decideStartPoint(r);
         world[startPoint.x][startPoint.y] = Tileset.START;
         stack.push(startPoint);
@@ -102,26 +102,26 @@ public class Game {
         switch (selector) {
             case 0:
                 p.x = 1;
-                p.y = decideXOrY(r, HEIGHT - 1);
+                p.y = decideXOrY(r, 1, HEIGHT - 1);
                 break;
             case 1:
                 p.y = 1;
-                p.x = decideXOrY(r, WIDTH - 1);
+                p.x = decideXOrY(r, 1, WIDTH - 1);
                 break;
             case 2:
                 p.x = WIDTH - 2;
-                p.y = decideXOrY(r, HEIGHT - 1);
+                p.y = decideXOrY(r, 1, HEIGHT - 1);
                 break;
             case 3:
                 p.y = HEIGHT - 2;
-                p.x = decideXOrY(r, WIDTH - 1);
+                p.x = decideXOrY(r, 1, WIDTH - 1);
                 break;
         }
         return p;
     }
 
-    private int decideXOrY(Random r, int edge) {
-        int x = RandomUtils.uniform(r, 1, edge);
+    private int decideXOrY(Random r, int start, int end) {
+        int x = RandomUtils.uniform(r, start, end);
         if (x % 2 == 0) {
             if (RandomUtils.bernoulli(r)) {
                 x++;
