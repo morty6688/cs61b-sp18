@@ -28,17 +28,36 @@ public class Game {
 
         Random r = new Random();
 
-        Stack<Position> stack = new Stack<>();
-        Position startPoint = decideStartPoint(r);
-        world[startPoint.x][startPoint.y] = Tileset.START;
-        stack.push(startPoint);
-
-        generateMaze(world, r, stack);
+        List<Room> rooms = generateRooms(world, r);
+        generateHalls(world, r);
+        
 
         ter.renderFrame(world);
     }
 
-    private void generateMaze(TETile[][] world, Random r, Stack<Position> stack) {
+    private List<Room> generateRooms(TETile[][] world, Random r) {
+        List<Room> rooms = new ArrayList<>();
+        for (int i = 0; i < Room.getRoomMaxNum();) {
+            Room newRoom;
+            do {
+                Position p1 = new Position(decideXOrY(r, 1, WIDTH - 3), decideXOrY(r, 1, HEIGHT - 3));
+                Position p2 = new Position(decideXOrY(r, p1.x + 1, WIDTH - 1), decideXOrY(r, p1.y + 1, HEIGHT - 1));
+                newRoom = new Room(p1, p2);
+            } while (!Room.isLegal(newRoom));
+            if (!newRoom.isOverlapped(rooms)) {
+                rooms.add(newRoom);
+                i++;
+                newRoom.drawRoom(world);
+            }
+        }
+        return rooms;
+    }
+
+    private void generateHalls(TETile[][] world, Random r) {
+        Stack<Position> stack = new Stack<>();
+        Position startPoint = decideStartPoint(r, world);
+        world[startPoint.x][startPoint.y] = Tileset.START;
+        stack.push(startPoint);
         while (!stack.isEmpty()) {
             Position existed = stack.peek();
             Position p = nextPos(r, existed, world);
@@ -46,16 +65,15 @@ public class Game {
                 stack.pop();
                 continue;
             }
-            // isVisited[p.x][p.y] = true;
-            world[p.x][p.y] = Tileset.DEVELOPEDFLOOR;
+            world[p.x][p.y] = Tileset.FLOOR;
             if (p.x > existed.x) {
-                world[existed.x + 1][existed.y] = Tileset.DEVELOPEDFLOOR;
+                world[existed.x + 1][existed.y] = Tileset.FLOOR;
             } else if (p.x < existed.x) {
-                world[existed.x - 1][existed.y] = Tileset.DEVELOPEDFLOOR;
+                world[existed.x - 1][existed.y] = Tileset.FLOOR;
             } else if (p.y > existed.y) {
-                world[existed.x][existed.y + 1] = Tileset.DEVELOPEDFLOOR;
+                world[existed.x][existed.y + 1] = Tileset.FLOOR;
             } else if (p.y < existed.y) {
-                world[existed.x][existed.y - 1] = Tileset.DEVELOPEDFLOOR;
+                world[existed.x][existed.y - 1] = Tileset.FLOOR;
             }
             stack.push(p);
         }
@@ -96,25 +114,33 @@ public class Game {
         return possiblePos.get(selector);
     }
 
-    private Position decideStartPoint(Random r) {
+    private Position decideStartPoint(Random r, TETile[][] world) {
         Position p = new Position();
         int selector = RandomUtils.uniform(r, 0, 4);
         switch (selector) {
             case 0:
                 p.x = 1;
-                p.y = decideXOrY(r, 1, HEIGHT - 1);
+                do {
+                    p.y = decideXOrY(r, 1, HEIGHT - 1);
+                } while (world[p.x][p.y] == Tileset.ROOMFLOOR);
                 break;
             case 1:
                 p.y = 1;
-                p.x = decideXOrY(r, 1, WIDTH - 1);
+                do {
+                    p.x = decideXOrY(r, 1, WIDTH - 1);
+                } while (world[p.x][p.y] == Tileset.ROOMFLOOR);
                 break;
             case 2:
                 p.x = WIDTH - 2;
-                p.y = decideXOrY(r, 1, HEIGHT - 1);
+                do {
+                    p.y = decideXOrY(r, 1, HEIGHT - 1);
+                } while (world[p.x][p.y] == Tileset.ROOMFLOOR);
                 break;
             case 3:
                 p.y = HEIGHT - 2;
-                p.x = decideXOrY(r, 1, WIDTH - 1);
+                do {
+                    p.x = decideXOrY(r, 1, WIDTH - 1);
+                } while (world[p.x][p.y] == Tileset.ROOMFLOOR);
                 break;
         }
         return p;
