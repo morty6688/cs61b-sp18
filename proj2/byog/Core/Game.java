@@ -30,9 +30,41 @@ public class Game {
 
         List<Room> rooms = generateRooms(world, r);
         generateHalls(world, r);
-        
+        generateConnectors(world, r, rooms);
+        carveDeadEnds(world);
 
         ter.renderFrame(world);
+    }
+
+    private void carveDeadEnds(TETile[][] world) {
+        for (int i = 0; i < WIDTH; i++) {
+            for (int j = 0; j < HEIGHT; j++) {
+                Position p = new Position(i, j);
+                if (p.isDeadEnd(world, WIDTH, HEIGHT)) {
+                    p.carveDeadEnd(world, WIDTH, HEIGHT);
+                }
+            }
+        }
+    }
+
+    private void generateConnectors(TETile[][] world, Random r, List<Room> rooms) {
+        for (Room room : rooms) {
+            List<Connector> connectors = room.findConnectors(world, WIDTH, HEIGHT);
+            if (connectors.size() == 0) {
+                continue;
+            }
+            // int numOfSelection = RandomUtils.uniform(r, 1, 4);
+            // for (int i = 0; i < numOfSelection; i++) {
+            // int selector = RandomUtils.uniform(r, 0, connectors.size());
+            // connectors.get(selector).connect(world, Tileset.FLOOR);
+            // }
+            int selector = RandomUtils.uniform(r, 0, connectors.size());
+            connectors.get(selector).connect(world, Tileset.FLOOR);
+        }
+
+        for (Room room : rooms) {
+            room.drawRoom(world, Tileset.FLOOR);
+        }
     }
 
     private List<Room> generateRooms(TETile[][] world, Random r) {
@@ -47,7 +79,7 @@ public class Game {
             if (!newRoom.isOverlapped(rooms)) {
                 rooms.add(newRoom);
                 i++;
-                newRoom.drawRoom(world);
+                newRoom.drawRoom(world, Tileset.ROOMFLOOR);
             }
         }
         return rooms;
@@ -56,26 +88,18 @@ public class Game {
     private void generateHalls(TETile[][] world, Random r) {
         Stack<Position> stack = new Stack<>();
         Position startPoint = decideStartPoint(r, world);
-        world[startPoint.x][startPoint.y] = Tileset.START;
+        world[startPoint.x][startPoint.y] = Tileset.FLOOR;
         stack.push(startPoint);
         while (!stack.isEmpty()) {
             Position existed = stack.peek();
-            Position p = nextPos(r, existed, world);
-            if (p == null) {
+            Connector conn = nextConnector(r, existed, world);
+            if (conn == null) {
                 stack.pop();
                 continue;
             }
-            world[p.x][p.y] = Tileset.FLOOR;
-            if (p.x > existed.x) {
-                world[existed.x + 1][existed.y] = Tileset.FLOOR;
-            } else if (p.x < existed.x) {
-                world[existed.x - 1][existed.y] = Tileset.FLOOR;
-            } else if (p.y > existed.y) {
-                world[existed.x][existed.y + 1] = Tileset.FLOOR;
-            } else if (p.y < existed.y) {
-                world[existed.x][existed.y - 1] = Tileset.FLOOR;
-            }
-            stack.push(p);
+            world[conn.getGoalPos().x][conn.getGoalPos().y] = Tileset.FLOOR;
+            conn.connect(world, Tileset.FLOOR);
+            stack.push(conn.getGoalPos());
         }
     }
 
@@ -93,25 +117,16 @@ public class Game {
         }
     }
 
-    private Position nextPos(Random r, Position p, TETile[][] world) {
-        List<Position> possiblePos = new ArrayList<>();
-        if (p.x + 2 >= 0 && p.x + 2 < WIDTH && world[p.x + 2][p.y] == Tileset.UNDEVFLOOR) {
-            possiblePos.add(new Position(p.x + 2, p.y));
+    private Connector nextConnector(Random r, Position p, TETile[][] world) {
+        List<Connector> possibleConnectors = new ArrayList<>();
+        for (Direction d : Direction.values()) {
+            Connector.addConnectableDirection(possibleConnectors, world, Tileset.UNDEVFLOOR, d, p, WIDTH, HEIGHT);
         }
-        if (p.x - 2 >= 0 && p.x - 2 < WIDTH && world[p.x - 2][p.y] == Tileset.UNDEVFLOOR) {
-            possiblePos.add(new Position(p.x - 2, p.y));
-        }
-        if (p.y + 2 >= 0 && p.y + 2 < HEIGHT && world[p.x][p.y + 2] == Tileset.UNDEVFLOOR) {
-            possiblePos.add(new Position(p.x, p.y + 2));
-        }
-        if (p.y - 2 >= 0 && p.y - 2 < HEIGHT && world[p.x][p.y - 2] == Tileset.UNDEVFLOOR) {
-            possiblePos.add(new Position(p.x, p.y - 2));
-        }
-        if (possiblePos.isEmpty()) {
+        if (possibleConnectors.isEmpty()) {
             return null;
         }
-        int selector = RandomUtils.uniform(r, 0, possiblePos.size());
-        return possiblePos.get(selector);
+        int selector = RandomUtils.uniform(r, 0, possibleConnectors.size());
+        return possibleConnectors.get(selector);
     }
 
     private Position decideStartPoint(Random r, TETile[][] world) {

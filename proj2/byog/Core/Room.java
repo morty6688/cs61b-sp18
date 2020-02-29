@@ -1,5 +1,6 @@
 package byog.Core;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import byog.TileEngine.TETile;
@@ -45,9 +46,9 @@ public class Room {
 
     public static boolean isLegal(Room r) {
         // not same x
-        boolean isXLegal = r.getBottomLeft().x != r.getUpRight().x;
+        boolean isXLegal = r.bottomLeft.x != r.upRight.x;
         // not same y
-        boolean isYLegal = r.getBottomLeft().y != r.getUpRight().y;
+        boolean isYLegal = r.bottomLeft.y != r.upRight.y;
         // assure legal width
         boolean isWidthLegal = r.getWidth() <= Room.roomMaxWidth;
         // assure legal height
@@ -56,12 +57,29 @@ public class Room {
         return isXLegal && isYLegal && isWidthLegal && isHeightLegal;
     }
 
-    public void drawRoom(TETile[][] world) {
+    public void drawRoom(TETile[][] world, TETile t) {
         for (int i = bottomLeft.x; i <= upRight.x; i++) {
             for (int j = bottomLeft.y; j <= upRight.y; j++) {
-                world[i][j] = Tileset.ROOMFLOOR;
+                world[i][j] = t;
             }
         }
+    }
+
+    public List<Connector> findConnectors(TETile[][] world, int width, int height) {
+        List<Connector> res = new ArrayList<>();
+        for (int i = bottomLeft.x; i <= upRight.x; i++) {
+            Position p1 = new Position(i, bottomLeft.y);
+            Connector.addConnectableDirection(res, world, Tileset.FLOOR, Direction.DOWN, p1, width, height);
+            Position p2 = new Position(i, upRight.y);
+            Connector.addConnectableDirection(res, world, Tileset.FLOOR, Direction.UP, p2, width, height);
+        }
+        for (int j = bottomLeft.y; j <= upRight.y; j++) {
+            Position p1 = new Position(bottomLeft.x, j);
+            Connector.addConnectableDirection(res, world, Tileset.FLOOR, Direction.LEFT, p1, width, height);
+            Position p2 = new Position(upRight.x, j);
+            Connector.addConnectableDirection(res, world, Tileset.FLOOR, Direction.RIGHT, p2, width, height);
+        }
+        return res;
     }
 
     public int getWidth() {
