@@ -31,7 +31,7 @@ public class Tileset {
 
         public static final TETile START = new TETile('起', Color.black, Color.red, "start_point");
         public static final TETile END = new TETile('终', Color.black, Color.red, "end_point");
-        public static final TETile UNDEVFLOOR = new TETile('·', new Color(128, 192, 128), Color.yellow, "undeveloped_floor");
-        public static final TETile ROOMFLOOR = new TETile('·', new Color(128, 192, 128), Color.orange, "developed_floor");
+        public static final TETile UNDEVFLOOR = new TETile('未', new Color(128, 192, 128), Color.yellow, "undeveloped_floor");
+        public static final TETile ROOMFLOOR = new TETile('屋', new Color(128, 192, 128), Color.orange, "developed_floor");
 
 }
