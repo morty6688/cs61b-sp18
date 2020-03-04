@@ -1,10 +1,12 @@
 package byog.Core;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.awt.Color;
+import java.awt.Font;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -13,10 +15,13 @@ import java.util.Stack;
 import byog.TileEngine.TERenderer;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
+import edu.princeton.cs.introcs.StdDraw;
 
 public class Game {
     TERenderer ter = new TERenderer();
-    /* Feel free to change the width and height. */
+    /*
+     * Feel free to change the width and height. (Better be odd number.)
+     */
     public static final int WIDTH = 81;
     public static final int HEIGHT = 31;
 
@@ -36,18 +41,15 @@ public class Game {
      * @return the 2D TETile[][] representing the state of the world
      */
     public TETile[][] playWithInputString(String input) {
-        long seed = 0;
         input = toLower(input);
         TETile[][] finalWorldFrame = null;
         char firstChar = input.charAt(0);
         if (firstChar == 'n') {
-            seed = getSeed(input);
-            finalWorldFrame = generateWorld(seed);
+            finalWorldFrame = newGame(input);
         } else if (firstChar == 'l') {
-            return loadGame();
-        }
-        if (input.substring(input.length() - 2).equals(":q")) {
-            saveGame(seed);
+            finalWorldFrame = loadGame(input);
+        } else if (firstChar == 'q') {
+            System.exit(0);
         }
         return finalWorldFrame;
     }
@@ -57,43 +59,196 @@ public class Game {
      * menu.
      */
     public void playWithKeyboard() {
-        ter.initialize(WIDTH, HEIGHT);
-
-        long seed = new Random().nextLong();
-        TETile[][] finalWorldFrame = generateWorld(seed);
-
-        ter.renderFrame(finalWorldFrame);
+        drawStartUI();
+        char firstChar = getFirstChar();
+        if (firstChar == 'n') {
+            newGame();
+        } else if (firstChar == 'l') {
+            loadGame();
+        } else if (firstChar == 'q') {
+            System.exit(0);
+        }
     }
 
-    private void saveGame(long seed) {
+    /** New game with keyboard. */
+    private void newGame() {
+        long seed = getSeed();
+        ter.initialize(WIDTH, HEIGHT + 1);
+        TETile[][] world = generateWorld(seed);
+        ter.renderFrame(world);
+        play(world);
+    }
+
+    /** New game with String. */
+    private TETile[][] newGame(String input) {
+        TETile[][] finalWorldFrame;
+        int indexS = input.indexOf('s');
+        long seed = convertSeed(input.substring(1, indexS));
+        finalWorldFrame = generateWorld(seed);
+
+        play(finalWorldFrame, input.substring(indexS + 1));
+        return finalWorldFrame;
+    }
+
+    /** Load game with String. */
+    private TETile[][] loadGame(String input) {
+        TETile[][] finalWorldFrame;
+        finalWorldFrame = getSavedGame();
+        play(finalWorldFrame, input.substring(1));
+        return finalWorldFrame;
+    }
+
+    /** Load game with keyboard. */
+    private void loadGame() {
+        ter.initialize(WIDTH, HEIGHT + 1);
+        TETile[][] world = getSavedGame();
+        ter.renderFrame(world);
+        play(world);
+    }
+
+    /** Play game with String. */
+    private void play(TETile[][] world, String playString) {
+        for (int i = 0; i < playString.length(); i++) {
+            switch (playString.charAt(i)) {
+                case 'w':
+                    Player.walkUp(world);
+                    break;
+                case 'a':
+                    Player.walkLeft(world);
+                    break;
+                case 's':
+                    Player.walkDown(world);
+                    break;
+                case 'd':
+                    Player.walkRight(world);
+                    break;
+                case ':':
+                    if (i + 1 < playString.length() && playString.charAt(i + 1) == 'q') {
+                        saveGame(world);
+                        return;
+                    }
+                    break;
+                default:
+            }
+        }
+    }
+
+    /** Play game with keyboard. */
+    private void play(TETile[][] world) {
+        while (true) {
+            if (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
+            char c = Character.toLowerCase(StdDraw.nextKeyTyped());
+            switch (c) {
+                case 'w':
+                    Player.walkUp(world);
+                    ter.renderFrame(world);
+                    break;
+                case 'a':
+                    Player.walkLeft(world);
+                    ter.renderFrame(world);
+                    break;
+                case 's':
+                    Player.walkDown(world);
+                    ter.renderFrame(world);
+                    break;
+                case 'd':
+                    Player.walkRight(world);
+                    ter.renderFrame(world);
+                    break;
+                case ':':
+                    while (true) {
+                        if (!StdDraw.hasNextKeyTyped()) {
+                            continue;
+                        }
+                        if (Character.toLowerCase(StdDraw.nextKeyTyped()) == 'q') {
+                            saveGame(world);
+                            System.exit(0);
+                        } else {
+                            break;
+                        }
+                    }
+                    break;
+                default:
+            }
+        }
+    }
+
+    private long getSeed() {
+        StdDraw.clear(Color.BLACK);
+        StdDraw.setFont(new Font("Monaco", Font.PLAIN, 50));
+        StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "Please enter a random seed:");
+        StdDraw.show();
+        String seedString = "";
+        while (true) {
+            StdDraw.clear(Color.BLACK);
+            StdDraw.setFont(new Font("Monaco", Font.PLAIN, 50));
+            StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "Please enter a random seed:");
+
+            char digit;
+            if (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
+            digit = Character.toLowerCase(StdDraw.nextKeyTyped());
+            if (digit != 's') {
+                if (!Character.isDigit(digit)) {
+                    continue;
+                }
+                seedString += digit;
+                StdDraw.setFont(new Font("Monaco", Font.PLAIN, 30));
+                StdDraw.text(WIDTH / 2, HEIGHT / 2, seedString);
+                StdDraw.show();
+            } else {
+                break;
+            }
+        }
+        long seed = convertSeed(seedString);
+        return seed;
+    }
+
+    private char getFirstChar() {
+        char c;
+        while (true) {
+            if (!StdDraw.hasNextKeyTyped()) {
+                continue;
+            }
+            c = Character.toLowerCase(StdDraw.nextKeyTyped());
+            if (c == 'n' || c == 'l' || c == 'q') {
+                break;
+            }
+        }
+        return c;
+    }
+
+    private void saveGame(TETile[][] finalWorldFrame) {
         try {
-            BufferedWriter out = new BufferedWriter(new FileWriter("savefile.txt"));
-            out.write(String.valueOf(seed));
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("savefile.ser"));
+            out.writeObject(finalWorldFrame);
+            out.writeObject(Player.getPos());
             out.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private TETile[][] loadGame() {
+    private TETile[][] getSavedGame() {
         TETile[][] finalWorldFrame = null;
         try {
-            BufferedReader in = new BufferedReader(new FileReader("savefile.txt"));
-            long seed = Long.valueOf(in.readLine());
-            finalWorldFrame = generateWorld(seed);
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream("savefile.ser"));
+            finalWorldFrame = (TETile[][]) in.readObject();
+            Player.setPos((Position) in.readObject());
             in.close();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
         return finalWorldFrame;
     }
 
-    private long getSeed(String input) {
-        StringBuilder seedNum = new StringBuilder();
-        for (int i = 1; input.charAt(i) != 's'; i++) {
-            seedNum.append(input.charAt(i));
-        }
-        return Long.valueOf(seedNum.toString());
+    private long convertSeed(String seedString) {
+        return Long.valueOf(seedString.toString());
     }
 
     private String toLower(String input) {
@@ -122,11 +277,11 @@ public class Game {
             carveDeadEnds(world);
         }
         carveExtraWalls(world);
-        addADoor(world, r);
+        addDoorAndInitialPlayer(world, r);
         return world;
     }
 
-    private void addADoor(TETile[][] world, Random r) {
+    private void addDoorAndInitialPlayer(TETile[][] world, Random r) {
         List<Position> edges = new ArrayList<>();
         for (int i = 0; i < WIDTH; i++) {
             for (int j = 0; j < HEIGHT; j++) {
@@ -137,7 +292,9 @@ public class Game {
             }
         }
         int selector = RandomUtils.uniform(r, 0, edges.size());
-        edges.get(selector).drawTile(world, Tileset.LOCKED_DOOR);
+        Position selected = edges.get(selector);
+        selected.drawTile(world, Tileset.LOCKED_DOOR);
+        selected.drawInitialPerson(world, WIDTH, HEIGHT);
     }
 
     private void carveExtraWalls(TETile[][] world) {
@@ -190,11 +347,10 @@ public class Game {
     private List<Room> generateRooms(TETile[][] world, Random r, int roomNum) {
         Room.setRoomMaxNum(roomNum);
         List<Room> rooms = new ArrayList<>();
-        for (int i = 0; i < Room.getRoomMaxNum(); ) {
+        for (int i = 0; i < Room.getRoomMaxNum();) {
             Room newRoom;
             do {
-                Position p1 = new Position(decideXOrY(r, 1, WIDTH - 3), decideXOrY(r, 1,
-                        HEIGHT - 3));
+                Position p1 = new Position(decideXOrY(r, 1, WIDTH - 3), decideXOrY(r, 1, HEIGHT - 3));
                 Position p2 = new Position(decideXOrY(r, p1.getX() + 1, WIDTH - 1),
                         decideXOrY(r, p1.getY() + 1, HEIGHT - 1));
                 newRoom = new Room(p1, p2);
@@ -244,8 +400,7 @@ public class Game {
     private Connector nextConnector(Random r, Position p, TETile[][] world) {
         List<Connector> possibleConnectors = new ArrayList<>();
         for (Direction d : Direction.values()) {
-            Connector.addConnectableDirection(possibleConnectors, world, Tileset.UNDEVFLOOR, d,
-                    p, WIDTH, HEIGHT);
+            Connector.addConnectableDirection(possibleConnectors, world, Tileset.UNDEVFLOOR, d, p, WIDTH, HEIGHT);
         }
         if (possibleConnectors.isEmpty()) {
             return null;
@@ -298,4 +453,28 @@ public class Game {
         return x;
     }
 
+    private void drawStartUI() {
+        initializeCanvas();
+
+        Font font = new Font("Monaco", Font.PLAIN, 60);
+        StdDraw.setFont(font);
+        StdDraw.text(WIDTH / 2, 3 * HEIGHT / 4, "CS61B: THE GAME");
+
+        Font smallFont = new Font("Monaco", Font.PLAIN, 30);
+        StdDraw.setFont(smallFont);
+        StdDraw.text(WIDTH / 2, HEIGHT / 4 + 2, "New Game (N)");
+        StdDraw.text(WIDTH / 2, HEIGHT / 4, "Load Game (L)");
+        StdDraw.text(WIDTH / 2, HEIGHT / 4 - 2, "Quit (Q)");
+
+        StdDraw.show();
+    }
+
+    private void initializeCanvas() {
+        StdDraw.setCanvasSize(WIDTH * 16, (HEIGHT + 1) * 16);
+        StdDraw.setXscale(0, WIDTH);
+        StdDraw.setYscale(0, HEIGHT + 1);
+        StdDraw.clear(Color.BLACK);
+        StdDraw.enableDoubleBuffering();
+        StdDraw.setPenColor(Color.WHITE);
+    }
 }

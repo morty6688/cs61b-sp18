@@ -1,12 +1,14 @@
 package byog.Core;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
-public class Position {
+public class Position implements Serializable {
+    private static final long serialVersionUID = 3964068339997564469L;
     private int x;
     private int y;
 
@@ -42,6 +44,7 @@ public class Position {
         if (!isTile(world, Tileset.WALL)) {
             return false;
         }
+        // There is only one floor(pos) around the wall of edge.
         int num = 0;
         Position pos = new Position();
         for (Position p : getAroundPositions(width, height, false)) {
@@ -50,6 +53,7 @@ public class Position {
                 pos = p;
             }
         }
+
         if (num == 1) {
             switch (getDirection(pos, width, height)) {
                 case LEFT:
@@ -144,7 +148,7 @@ public class Position {
     }
 
     public boolean isTile(TETile[][] world, TETile t) {
-        return world[x][y] == t;
+        return world[x][y].equals(t);
     }
 
     private List<Position> getAroundPositions(int width, int height, boolean isAll) {
@@ -176,6 +180,16 @@ public class Position {
             }
         }
         return res;
+    }
+
+    public void drawInitialPerson(TETile[][] world, int width, int height) {
+        for (Position p : getAroundPositions(width, height, false)) {
+            if (p.isTile(world, Tileset.FLOOR)) {
+                p.drawTile(world, Tileset.PLAYER);
+                Player.setPos(p);
+                return;
+            }
+        }
     }
 
 }
