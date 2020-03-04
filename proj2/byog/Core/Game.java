@@ -70,7 +70,9 @@ public class Game {
         }
     }
 
-    /** New game with keyboard. */
+    /**
+     * New game with keyboard.
+     */
     private void newGame() {
         long seed = getSeed();
         ter.initialize(WIDTH, HEIGHT + 1);
@@ -79,7 +81,9 @@ public class Game {
         play(world);
     }
 
-    /** New game with String. */
+    /**
+     * New game with String.
+     */
     private TETile[][] newGame(String input) {
         TETile[][] finalWorldFrame;
         int indexS = input.indexOf('s');
@@ -90,7 +94,9 @@ public class Game {
         return finalWorldFrame;
     }
 
-    /** Load game with String. */
+    /**
+     * Load game with String.
+     */
     private TETile[][] loadGame(String input) {
         TETile[][] finalWorldFrame;
         finalWorldFrame = getSavedGame();
@@ -98,7 +104,9 @@ public class Game {
         return finalWorldFrame;
     }
 
-    /** Load game with keyboard. */
+    /**
+     * Load game with keyboard.
+     */
     private void loadGame() {
         ter.initialize(WIDTH, HEIGHT + 1);
         TETile[][] world = getSavedGame();
@@ -106,7 +114,9 @@ public class Game {
         play(world);
     }
 
-    /** Play game with String. */
+    /**
+     * Play game with String.
+     */
     private void play(TETile[][] world, String playString) {
         for (int i = 0; i < playString.length(); i++) {
             switch (playString.charAt(i)) {
@@ -133,7 +143,9 @@ public class Game {
         }
     }
 
-    /** Play game with keyboard. */
+    /**
+     * Play game with keyboard.
+     */
     private void play(TETile[][] world) {
         while (true) {
             if (!StdDraw.hasNextKeyTyped()) {
@@ -175,6 +187,9 @@ public class Game {
         }
     }
 
+    /**
+     * Get seed from keyboard.
+     */
     private long getSeed() {
         StdDraw.clear(Color.BLACK);
         StdDraw.setFont(new Font("Monaco", Font.PLAIN, 50));
@@ -347,10 +362,11 @@ public class Game {
     private List<Room> generateRooms(TETile[][] world, Random r, int roomNum) {
         Room.setRoomMaxNum(roomNum);
         List<Room> rooms = new ArrayList<>();
-        for (int i = 0; i < Room.getRoomMaxNum();) {
+        for (int i = 0; i < Room.getRoomMaxNum(); ) {
             Room newRoom;
             do {
-                Position p1 = new Position(decideXOrY(r, 1, WIDTH - 3), decideXOrY(r, 1, HEIGHT - 3));
+                Position p1 = new Position(decideXOrY(r, 1, WIDTH - 3), decideXOrY(r, 1,
+                        HEIGHT - 3));
                 Position p2 = new Position(decideXOrY(r, p1.getX() + 1, WIDTH - 1),
                         decideXOrY(r, p1.getY() + 1, HEIGHT - 1));
                 newRoom = new Room(p1, p2);
@@ -400,7 +416,8 @@ public class Game {
     private Connector nextConnector(Random r, Position p, TETile[][] world) {
         List<Connector> possibleConnectors = new ArrayList<>();
         for (Direction d : Direction.values()) {
-            Connector.addConnectableDirection(possibleConnectors, world, Tileset.UNDEVFLOOR, d, p, WIDTH, HEIGHT);
+            Connector.addConnectableDirection(possibleConnectors, world, Tileset.UNDEVFLOOR, d,
+                    p, WIDTH, HEIGHT);
         }
         if (possibleConnectors.isEmpty()) {
             return null;

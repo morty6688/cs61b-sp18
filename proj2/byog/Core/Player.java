@@ -3,7 +3,7 @@ package byog.Core;
 import byog.TileEngine.TETile;
 import byog.TileEngine.Tileset;
 
-public class Player{
+public class Player {
     private static Position pos;
 
     public static Position getPos() {
