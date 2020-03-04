@@ -238,7 +238,7 @@ public class Game {
 
     private void saveGame(TETile[][] finalWorldFrame) {
         try {
-            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("savefile.ser"));
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("savefile.txt"));
             out.writeObject(finalWorldFrame);
             out.writeObject(Player.getPos());
             out.close();
@@ -250,7 +250,7 @@ public class Game {
     private TETile[][] getSavedGame() {
         TETile[][] finalWorldFrame = null;
         try {
-            ObjectInputStream in = new ObjectInputStream(new FileInputStream("savefile.ser"));
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream("savefile.txt"));
             finalWorldFrame = (TETile[][]) in.readObject();
             Player.setPos((Position) in.readObject());
             in.close();
