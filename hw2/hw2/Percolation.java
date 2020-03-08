@@ -5,6 +5,8 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class Percolation {
     private int N;
     private WeightedQuickUnionUF sites;
+    // sites without bottomSite
+    private WeightedQuickUnionUF sites2;
     private int topSite;
     private int bottomSite;
     private boolean[][] flagOpen;
@@ -18,13 +20,20 @@ public class Percolation {
         this.N = N;
         topSite = N * N;
         bottomSite = N * N + 1;
+
         sites = new WeightedQuickUnionUF(N * N + 2);
         for (int i = 0; i < N; i++) {
             sites.union(topSite, xyTo1D(0, i));
         }
-        // for (int i = 0; i < N; i++) {
-        // sites.union(bottomSite, xyTo1D(N - 1, i));
-        // }
+        for (int i = 0; i < N; i++) {
+            sites.union(bottomSite, xyTo1D(N - 1, i));
+        }
+
+        sites2 = new WeightedQuickUnionUF(N * N + 1);
+        for (int i = 0; i < N; i++) {
+            sites2.union(topSite, xyTo1D(0, i));
+        }
+
         flagOpen = new boolean[N][N];
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
@@ -45,16 +54,12 @@ public class Percolation {
         unionOpenNeighbor(row, col, row - 1, col);
         unionOpenNeighbor(row, col, row, col + 1);
         unionOpenNeighbor(row, col, row, col - 1);
-
-        if (row == N - 1 && isFull(row, col)) {
-            sites.union(bottomSite, xyTo1D(row, col));
-        }
     }
 
     // is the site (row, col) open?
     public boolean isOpen(int row, int col) {
         validateRange(row, col);
-        return flagOpen[row][col] == true;
+        return flagOpen[row][col];
     }
 
     // is the site (row, col) full?
@@ -64,7 +69,7 @@ public class Percolation {
         if (!isOpen(row, col)) {
             return false;
         }
-        return sites.connected(xyTo1D(row, col), topSite);
+        return sites2.connected(xyTo1D(row, col), topSite);
     }
 
     // number of open sites
@@ -74,6 +79,9 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
+        if (numOpen == 0) {
+            return false;
+        }
         return sites.connected(topSite, bottomSite);
     }
 
@@ -93,6 +101,7 @@ public class Percolation {
         }
         if (flagOpen[newRow][newCol]) {
             sites.union(xyTo1D(row, col), xyTo1D(newRow, newCol));
+            sites2.union(xyTo1D(row, col), xyTo1D(newRow, newCol));
         }
     }
 
