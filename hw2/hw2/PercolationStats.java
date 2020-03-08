@@ -5,7 +5,7 @@ import edu.princeton.cs.introcs.StdStats;
 
 public class PercolationStats {
     private int T;
-    private int[] openSites;
+    private double[] openSiteFractions;
 
     // perform T independent experiments on an N-by-N grid
     public PercolationStats(int N, int T, PercolationFactory pf) {
@@ -13,7 +13,7 @@ public class PercolationStats {
             throw new IllegalArgumentException();
         }
         this.T = T;
-        openSites = new int[T];
+        openSiteFractions = new double[T];
         for (int i = 0; i < T; i++) {
             Percolation percolation = pf.make(N);
             while (!percolation.percolates()) {
@@ -24,18 +24,18 @@ public class PercolationStats {
                 } while (percolation.isOpen(x, y));
                 percolation.open(x, y);
             }
-            openSites[i] = percolation.numberOfOpenSites();
+            openSiteFractions[i] = (double) percolation.numberOfOpenSites() / (N * N);
         }
     }
 
     // sample mean of percolation threshold
     public double mean() {
-        return StdStats.mean(openSites);
+        return StdStats.mean(openSiteFractions);
     }
 
     // sample standard deviation of percolation threshold
     public double stddev() {
-        return StdStats.stddev(openSites);
+        return StdStats.stddev(openSiteFractions);
     }
 
     // low endpoint of 95% confidence interval
@@ -48,9 +48,9 @@ public class PercolationStats {
         return mean() + 1.96 * stddev() / Math.sqrt(T);
     }
 
-    public static void main(String[] args) {
-        PercolationStats ps = new PercolationStats(20, 10, new PercolationFactory());
-        System.out.println(ps.mean());
-        System.out.println(ps.stddev());
-    }
+    // public static void main(String[] args) {
+    // PercolationStats ps = new PercolationStats(20, 10, new PercolationFactory());
+    // System.out.println(ps.mean());
+    // System.out.println(ps.stddev());
+    // }
 }
