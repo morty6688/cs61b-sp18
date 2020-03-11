@@ -41,7 +41,7 @@ public class TestComplexOomage {
         for (int i = 0; i < 30; i++) {
             List<Integer> p = new ArrayList<>();
             for (int j = 0; j < i; j++) {
-                p.add(5);
+                p.add(5 * j);
             }
 
             Oomage o = new ComplexOomage(p);
