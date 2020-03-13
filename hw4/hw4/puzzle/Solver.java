@@ -42,7 +42,7 @@ public class Solver {
         }
     }
 
-    private Stack<WorldState> solution;
+    private List<WorldState> solution = new ArrayList<>();
     private Map<WorldState, Integer> edtgCaches = new HashMap<>();
 
     /**
@@ -70,11 +70,13 @@ public class Solver {
             }
         }
 
-        solution = new Stack<>();
+        Stack<WorldState> path = new Stack<>();
         for (SearchNode n = currentNode; n != null; n = n.prev) {
-            solution.push(n.state);
+            path.push(n.state);
         }
-
+        while (!path.isEmpty()) {
+            solution.add(path.pop());
+        }
     }
 
     /**
