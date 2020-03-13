@@ -148,7 +148,7 @@ public class Board implements WorldState {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        int N = size();
+        // int N = size();
         s.append(N + "\n");
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
@@ -174,5 +174,10 @@ public class Board implements WorldState {
         res += rightPos[0] > i ? rightPos[0] - i : i - rightPos[0];
         res += rightPos[1] > j ? rightPos[1] - j : j - rightPos[1];
         return res;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

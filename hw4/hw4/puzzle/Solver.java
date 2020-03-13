@@ -72,7 +72,7 @@ public class Solver {
 
         solution = new Stack<>();
         for (SearchNode n = currentNode; n != null; n = n.prev) {
-            solution.add(n.state);
+            solution.push(n.state);
         }
 
     }
@@ -90,10 +90,6 @@ public class Solver {
      * solution.
      */
     public Iterable<WorldState> solution() {
-        List<WorldState> res = new ArrayList<>();
-        while (!solution.empty()) {
-            res.add(solution.pop());
-        }
-        return res;
+        return solution;
     }
 }
