@@ -46,11 +46,11 @@ public class MazeAStarPath extends MazeExplorer {
     }
 
     /** Performs an A star search from vertex s. */
-    private void astar(int s) {
+    private void astar(int src) {
         PriorityQueue<Node> pq = new PriorityQueue<>(new NodeComparator());
-        Node curNode = new Node(s);
+        Node curNode = new Node(src);
         pq.add(curNode);
-        marked[s] = true;
+        marked[src] = true;
         while (!pq.isEmpty()) {
             curNode = pq.poll();
             for (int w : maze.adj(curNode.v)) {

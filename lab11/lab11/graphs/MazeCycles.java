@@ -41,7 +41,8 @@ public class MazeCycles extends MazeExplorer {
             if (!marked[w]) {
                 pathTo[w] = v;
                 dfs(w);
-            } else if (w != pathTo[v]) {// w is not the parent of v (circle found)
+            } else if (w != pathTo[v]) {
+                // w is not the parent of v (circle found)
                 pathTo[w] = v;
 
                 int cur = v;
