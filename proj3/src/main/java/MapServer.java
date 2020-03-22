@@ -332,7 +332,7 @@ public class MapServer {
     private static String getDirectionsText() {
         List<Router.NavigationDirection> directions = Router.routeDirections(graph, route);
         if (directions == null || directions.isEmpty()) {
-          return "";
+            return "";
         }
         StringBuilder sb = new StringBuilder();
         int step = 1;

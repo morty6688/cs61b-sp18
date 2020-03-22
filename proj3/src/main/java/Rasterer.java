@@ -9,11 +9,12 @@ import java.util.Map;
  */
 public class Rasterer {
     private static double[] depthLonDPP = new double[8];
-    private static final double originalLRLon = MapServer.ROOT_LRLON, originalULLon = MapServer.ROOT_ULLON;
-    private static final double originalLRLat = MapServer.ROOT_LRLAT, originalULLat = MapServer.ROOT_ULLAT;
+    private static final double INITLRLON = MapServer.ROOT_LRLON, INITULLON =
+            MapServer.ROOT_ULLON, INITLRLAT = MapServer.ROOT_LRLAT, INITULLAT =
+            MapServer.ROOT_ULLAT;
 
     static {
-        depthLonDPP[0] = (originalLRLon - originalULLon) / MapServer.TILE_SIZE;
+        depthLonDPP[0] = (INITLRLON - INITULLON) / MapServer.TILE_SIZE;
         for (int i = 1; i < 8; i++) {
             depthLonDPP[i] = depthLonDPP[i - 1] / 2;
         }
@@ -27,7 +28,7 @@ public class Rasterer {
      * Takes a user query and finds the grid of images that best matches the query.
      * These images will be combined into one big image (rastered) by the front end.
      * <br>
-     *
+     * <p>
      * The grid of images must obey the following properties, where image in the
      * grid is referred to as a "tile".
      * <ul>
@@ -42,20 +43,19 @@ public class Rasterer {
      *
      * @param params Map of the HTTP GET request's query parameters - the query box
      *               and the user viewport width and height.
-     *
      * @return A map of results for the front end as specified: <br>
-     *         "render_grid" : String[][], the files to display. <br>
-     *         "raster_ul_lon" : Number, the bounding upper left longitude of the
-     *         rastered image. <br>
-     *         "raster_ul_lat" : Number, the bounding upper left latitude of the
-     *         rastered image. <br>
-     *         "raster_lr_lon" : Number, the bounding lower right longitude of the
-     *         rastered image. <br>
-     *         "raster_lr_lat" : Number, the bounding lower right latitude of the
-     *         rastered image. <br>
-     *         "depth" : Number, the depth of the nodes of the rastered image <br>
-     *         "query_success" : Boolean, whether the query was able to successfully
-     *         complete; don't forget to set this to true on success! <br>
+     * "render_grid" : String[][], the files to display. <br>
+     * "raster_ul_lon" : Number, the bounding upper left longitude of the
+     * rastered image. <br>
+     * "raster_ul_lat" : Number, the bounding upper left latitude of the
+     * rastered image. <br>
+     * "raster_lr_lon" : Number, the bounding lower right longitude of the
+     * rastered image. <br>
+     * "raster_lr_lat" : Number, the bounding lower right latitude of the
+     * rastered image. <br>
+     * "depth" : Number, the depth of the nodes of the rastered image <br>
+     * "query_success" : Boolean, whether the query was able to successfully
+     * complete; don't forget to set this to true on success! <br>
      */
     public Map<String, Object> getMapRaster(Map<String, Double> params) {
         // System.out.println(params);
@@ -66,9 +66,9 @@ public class Rasterer {
         double requestedLRLon = params.get("lrlon");
         double requestedLRLat = params.get("lrlat");
 
-        if (requestedLRLat >= originalULLat || requestedLRLon <= originalULLon || requestedULLat <= originalLRLat
-                || requestedULLon >= originalLRLon || requestedULLon >= requestedLRLon
-                || requestedULLat <= requestedLRLat) {
+        if (requestedLRLat >= INITULLAT || requestedLRLon <= INITULLON
+                || requestedULLat <= INITLRLAT || requestedULLon >= INITLRLON
+                || requestedULLon >= requestedLRLon || requestedULLat <= requestedLRLat) {
             results.put("query_success", false);
             results.put("depth", 0);
             results.put("render_grid", null);
@@ -85,11 +85,11 @@ public class Rasterer {
         results.put("depth", depth);
         double maxLevel = Math.pow(2, depth);
 
-        double xDiff = (originalLRLon - originalULLon) / maxLevel;
-        double yDiff = (originalLRLat - originalULLat) / maxLevel;
+        double xDiff = (INITLRLON - INITULLON) / maxLevel;
+        double yDiff = (INITLRLAT - INITULLAT) / maxLevel;
 
         int xLeft = 0, yLeft = 0, xRight = 0, yRight = 0;
-        for (double x = originalULLon; x <= originalLRLon; x += xDiff) {
+        for (double x = INITULLON; x <= INITLRLON; x += xDiff) {
             if (x <= requestedULLon) {
                 xLeft++;
             }
@@ -97,7 +97,7 @@ public class Rasterer {
                 xRight++;
             }
         }
-        for (double y = originalULLat; y >= originalLRLat; y += yDiff) {
+        for (double y = INITULLAT; y >= INITLRLAT; y += yDiff) {
             if (y >= requestedULLat) {
                 yLeft++;
             }
@@ -127,10 +127,10 @@ public class Rasterer {
 
         results.put("render_grid", files);
 
-        results.put("raster_ul_lon", originalULLon + xLeft * xDiff);
-        results.put("raster_ul_lat", originalULLat + yLeft * yDiff);
-        results.put("raster_lr_lon", originalULLon + (xRight + 1) * xDiff);
-        results.put("raster_lr_lat", originalULLat + (yRight + 1) * yDiff);
+        results.put("raster_ul_lon", INITULLON + xLeft * xDiff);
+        results.put("raster_ul_lat", INITULLAT + yLeft * yDiff);
+        results.put("raster_lr_lon", INITULLON + (xRight + 1) * xDiff);
+        results.put("raster_lr_lat", INITULLAT + (yRight + 1) * yDiff);
         results.put("query_success", true);
         // System.out.println(results);
 
