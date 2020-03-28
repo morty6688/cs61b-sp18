@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -221,6 +222,7 @@ public class GraphDB {
         // Map<String, String> extraInfo;
         String name;
         Set<Long> adjs;
+        double priority = 0;
 
         Node(long id, double lon, double lat) {
             this.id = id;
@@ -229,6 +231,25 @@ public class GraphDB {
             // this.extraInfo = new HashMap<>();
             this.adjs = new LinkedHashSet<>();
         }
+    }
+
+    public double getPriority(long v) {
+        return nodes.get(v).priority;
+    }
+
+    public void changePriority(long v, double newPriority) {
+        nodes.get(v).priority = newPriority;
+    }
+
+    class NodeComparator implements Comparator<Long> {
+        @Override
+        public int compare(Long v, Long w) {
+            return Double.compare(nodes.get(v).priority, nodes.get(w).priority);
+        }
+    }
+
+    public Comparator<Long> getNodeComparator() {
+        return new NodeComparator();
     }
 
     static class Way {

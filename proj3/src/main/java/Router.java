@@ -1,5 +1,9 @@
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.PriorityQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,9 +27,45 @@ public class Router {
      * @param destlat The latitude of the destination location.
      * @return A list of node id's in the order visited on the shortest path.
      */
-    public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
-                                          double destlon, double destlat) {
-        return null; // FIXME
+    public static List<Long> shortestPath(GraphDB g, double stlon, double stlat, double destlon, double destlat) {
+        long stNode = g.closest(stlon, stlat);
+        long destNode = g.closest(destlon, destlat);
+        Map<Long, Long> edgeTo = new HashMap<>();
+
+        PriorityQueue<Long> pq = new PriorityQueue<>(g.getNodeComparator());
+        for (Long node : g.vertices()) {
+            g.changePriority(node, Double.MAX_VALUE);
+            if (node != stNode) {
+                pq.add(node);
+            }
+        }
+        g.changePriority(stNode, 0);
+        pq.add(stNode);
+        while (!pq.isEmpty()) {
+            long p = pq.poll();
+            for (long q : g.adjacent(p)) {
+                relax(g, edgeTo, pq, p, q);
+            }
+        }
+
+        List<Long> res = new LinkedList<>();
+        res.add(destNode);
+        while (destNode != stNode) {
+            res.add(0, edgeTo.get(destNode));
+            destNode = edgeTo.get(destNode);
+        }
+        return res;
+    }
+
+    private static void relax(GraphDB g, Map<Long, Long> edgeTo, PriorityQueue<Long> pq, long p, long q) {
+        if (!pq.contains(q)) {  // has been visited
+            return;
+        }
+        if (g.getPriority(p) + g.distance(p, q) < g.getPriority(q)) {
+            g.changePriority(q, g.getPriority(p) + g.distance(p, q));
+            pq.add(q);
+            edgeTo.put(q, p);
+        }
     }
 
     /**
@@ -39,7 +79,6 @@ public class Router {
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
         return null; // FIXME
     }
-
 
     /**
      * Class to represent a navigation direction, which consists of 3 attributes:
@@ -65,7 +104,7 @@ public class Router {
 
         /** Default name for an unknown way. */
         public static final String UNKNOWN_ROAD = "unknown road";
-        
+
         /** Static initializer. */
         static {
             DIRECTIONS[START] = "Start";
