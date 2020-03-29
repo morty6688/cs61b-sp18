@@ -29,7 +29,8 @@ public class Router {
      * @param destlat The latitude of the destination location.
      * @return A list of node id's in the order visited on the shortest path.
      */
-    public static List<Long> shortestPath(GraphDB g, double stlon, double stlat, double destlon, double destlat) {
+    public static List<Long> shortestPath(GraphDB g, double stlon, double stlat, double destlon,
+                                          double destlat) {
         long stNode = g.closest(stlon, stlat);
         long destNode = g.closest(destlon, destlat);
         Map<Long, Long> edgeTo = new HashMap<>();
@@ -71,8 +72,8 @@ public class Router {
         return res;
     }
 
-    private static void relax(GraphDB g, Map<Long, Long> edgeTo, PriorityQueue<Long> pq, long v, long w,
-            long destNode) {
+    private static void relax(GraphDB g, Map<Long, Long> edgeTo, PriorityQueue<Long> pq, long v,
+                              long w, long destNode) {
         // dijkstra
         if (g.getDistTo(v) + g.distance(v, w) < g.getDistTo(w)) {
             g.changeDistTo(w, g.getDistTo(v) + g.distance(v, w));
@@ -151,7 +152,8 @@ public class Router {
         }
 
         public String toString() {
-            return String.format("%s on %s and continue for %.3f miles.", DIRECTIONS[direction], way, distance);
+            return String.format("%s on %s and continue for %.3f miles.", DIRECTIONS[direction],
+                    way, distance);
         }
 
         /**
@@ -203,7 +205,8 @@ public class Router {
         @Override
         public boolean equals(Object o) {
             if (o instanceof NavigationDirection) {
-                return direction == ((NavigationDirection) o).direction && way.equals(((NavigationDirection) o).way)
+                return direction == ((NavigationDirection) o).direction
+                        && way.equals(((NavigationDirection) o).way)
                         && distance == ((NavigationDirection) o).distance;
             }
             return false;
