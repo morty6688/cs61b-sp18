@@ -41,8 +41,12 @@ public class Router {
         }
         g.changePriority(stNode, 0);
         pq.add(stNode);
+
         while (!pq.isEmpty()) {
             long p = pq.poll();
+            if (p == destNode) {
+                break;
+            }
             for (long q : g.adjacent(p)) {
                 relax(g, edgeTo, pq, p, q);
             }
@@ -58,7 +62,7 @@ public class Router {
     }
 
     private static void relax(GraphDB g, Map<Long, Long> edgeTo, PriorityQueue<Long> pq, long p, long q) {
-        if (!pq.contains(q)) {  // has been visited
+        if (!pq.contains(q)) { // has been visited
             return;
         }
         if (g.getPriority(p) + g.distance(p, q) < g.getPriority(q)) {
