@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,24 +33,24 @@ public class Router {
         long stNode = g.closest(stlon, stlat);
         long destNode = g.closest(destlon, destlat);
         Map<Long, Long> edgeTo = new HashMap<>();
+        Set<Long> isVisited = new TreeSet<>();
 
         PriorityQueue<Long> pq = new PriorityQueue<>(g.getNodeComparator());
         for (Long node : g.vertices()) {
             g.changeDistTo(node, Double.MAX_VALUE);
-            g.changePriority(node, Double.MAX_VALUE);
-            if (node != stNode) {
-                pq.add(node);
-            }
         }
         g.changeDistTo(stNode, 0);
-        g.changePriority(stNode, 0);
         pq.add(stNode);
 
         while (!pq.isEmpty()) {
             long v = pq.poll();
+            if (isVisited.contains(v)) {
+                continue;
+            }
             if (v == destNode) {
                 break;
             }
+            isVisited.add(v);
             for (long w : g.adjacent(v)) {
                 relax(g, edgeTo, pq, v, w, destNode);
             }
@@ -65,19 +67,14 @@ public class Router {
 
     private static void relax(GraphDB g, Map<Long, Long> edgeTo, PriorityQueue<Long> pq, long v, long w,
             long destNode) {
-        if (!pq.contains(w)) { // has been visited
-            return;
-        }
         // dijkstra
         if (g.getDistTo(v) + g.distance(v, w) < g.getDistTo(w)) {
             g.changeDistTo(w, g.getDistTo(v) + g.distance(v, w));
 
             // A* search
             g.changePriority(w, g.getDistTo(w) + g.distance(w, destNode));
-
-            // must remove firstly then add, or will produce error
-            pq.remove(w);
             pq.add(w);
+
             edgeTo.put(w, v);
         }
     }
