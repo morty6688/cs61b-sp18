@@ -62,6 +62,12 @@ public class Router {
             res.add(0, edgeTo.get(destNode));
             destNode = edgeTo.get(destNode);
         }
+
+        // clean
+        for (Long node : g.vertices()) {
+            g.changePriority(node, 0);
+        }
+
         return res;
     }
 
