@@ -67,10 +67,12 @@ public class Router {
             return;
         }
         if (g.getPriority(p) + g.distance(p, q) < g.getPriority(q)) {
-            // A* search
-            g.changePriority(q, g.getPriority(p) + g.distance(p, q) + g.distance(q, destNode));
+
             // dijkstra
-            // g.changePriority(q, g.getPriority(p) + g.distance(p, q));
+            g.changePriority(q, g.getPriority(p) + g.distance(p, q));
+
+            // must remove firstly and add, or will produce error
+            pq.remove(q);
             pq.add(q);
             edgeTo.put(q, p);
         }
@@ -142,8 +144,7 @@ public class Router {
         }
 
         public String toString() {
-            return String.format("%s on %s and continue for %.3f miles.",
-                    DIRECTIONS[direction], way, distance);
+            return String.format("%s on %s and continue for %.3f miles.", DIRECTIONS[direction], way, distance);
         }
 
         /**
@@ -195,9 +196,8 @@ public class Router {
         @Override
         public boolean equals(Object o) {
             if (o instanceof NavigationDirection) {
-                return direction == ((NavigationDirection) o).direction
-                    && way.equals(((NavigationDirection) o).way)
-                    && distance == ((NavigationDirection) o).distance;
+                return direction == ((NavigationDirection) o).direction && way.equals(((NavigationDirection) o).way)
+                        && distance == ((NavigationDirection) o).distance;
             }
             return false;
         }
