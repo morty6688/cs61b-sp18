@@ -223,6 +223,7 @@ public class GraphDB {
         String name;
         Set<Long> adjs;
         double priority = 0;
+        double distTo = 0;
 
         Node(long id, double lon, double lat) {
             this.id = id;
@@ -231,6 +232,14 @@ public class GraphDB {
             // this.extraInfo = new HashMap<>();
             this.adjs = new LinkedHashSet<>();
         }
+    }
+
+    public double getDistTo(long v) {
+        return nodes.get(v).distTo;
+    }
+
+    public void changeDistTo(long v, double newDistTo) {
+        nodes.get(v).distTo = newDistTo;
     }
 
     public double getPriority(long v) {
@@ -244,7 +253,7 @@ public class GraphDB {
     class NodeComparator implements Comparator<Long> {
         @Override
         public int compare(Long v, Long w) {
-            return Double.compare(nodes.get(v).priority, nodes.get(w).priority);
+            return Double.compare(nodes.get(v).distTo, nodes.get(w).distTo);
         }
     }
 

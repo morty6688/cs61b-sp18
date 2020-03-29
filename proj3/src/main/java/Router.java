@@ -34,21 +34,21 @@ public class Router {
 
         PriorityQueue<Long> pq = new PriorityQueue<>(g.getNodeComparator());
         for (Long node : g.vertices()) {
-            g.changePriority(node, Double.MAX_VALUE);
+            g.changeDistTo(node, Double.MAX_VALUE);
             if (node != stNode) {
                 pq.add(node);
             }
         }
-        g.changePriority(stNode, 0);
+        g.changeDistTo(stNode, 0);
         pq.add(stNode);
 
         while (!pq.isEmpty()) {
-            long p = pq.poll();
-            if (p == destNode) {
+            long v = pq.poll();
+            if (v == destNode) {
                 break;
             }
-            for (long q : g.adjacent(p)) {
-                relax(g, edgeTo, pq, p, q, destNode);
+            for (long w : g.adjacent(v)) {
+                relax(g, edgeTo, pq, v, w, destNode);
             }
         }
 
@@ -61,20 +61,19 @@ public class Router {
         return res;
     }
 
-    private static void relax(GraphDB g, Map<Long, Long> edgeTo, PriorityQueue<Long> pq, long p, long q,
+    private static void relax(GraphDB g, Map<Long, Long> edgeTo, PriorityQueue<Long> pq, long v, long w,
             long destNode) {
-        if (!pq.contains(q)) { // has been visited
+        if (!pq.contains(w)) { // has been visited
             return;
         }
-        if (g.getPriority(p) + g.distance(p, q) < g.getPriority(q)) {
+        // dijkstra
+        if (g.getDistTo(v) + g.distance(v, w) < g.getDistTo(w)) {
+            g.changeDistTo(w, g.getDistTo(v) + g.distance(v, w));
 
-            // dijkstra
-            g.changePriority(q, g.getPriority(p) + g.distance(p, q));
-
-            // must remove firstly and add, or will produce error
-            pq.remove(q);
-            pq.add(q);
-            edgeTo.put(q, p);
+            // must remove firstly then add, or will produce error
+            pq.remove(w);
+            pq.add(w);
+            edgeTo.put(w, v);
         }
     }
 
