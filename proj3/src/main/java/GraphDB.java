@@ -242,10 +242,6 @@ public class GraphDB {
         nodes.get(v).distTo = newDistTo;
     }
 
-    public double getPriority(long v) {
-        return nodes.get(v).priority;
-    }
-
     public void changePriority(long v, double newPriority) {
         nodes.get(v).priority = newPriority;
     }
@@ -253,7 +249,7 @@ public class GraphDB {
     class NodeComparator implements Comparator<Long> {
         @Override
         public int compare(Long v, Long w) {
-            return Double.compare(nodes.get(v).distTo, nodes.get(w).distTo);
+            return Double.compare(nodes.get(v).priority, nodes.get(w).priority);
         }
     }
 

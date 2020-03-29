@@ -35,11 +35,13 @@ public class Router {
         PriorityQueue<Long> pq = new PriorityQueue<>(g.getNodeComparator());
         for (Long node : g.vertices()) {
             g.changeDistTo(node, Double.MAX_VALUE);
+            g.changePriority(node, Double.MAX_VALUE);
             if (node != stNode) {
                 pq.add(node);
             }
         }
         g.changeDistTo(stNode, 0);
+        g.changePriority(stNode, 0);
         pq.add(stNode);
 
         while (!pq.isEmpty()) {
@@ -69,6 +71,9 @@ public class Router {
         // dijkstra
         if (g.getDistTo(v) + g.distance(v, w) < g.getDistTo(w)) {
             g.changeDistTo(w, g.getDistTo(v) + g.distance(v, w));
+
+            // A* search
+            g.changePriority(w, g.getDistTo(w) + g.distance(w, destNode));
 
             // must remove firstly then add, or will produce error
             pq.remove(w);
