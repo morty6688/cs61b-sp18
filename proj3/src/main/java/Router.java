@@ -48,7 +48,7 @@ public class Router {
                 break;
             }
             for (long q : g.adjacent(p)) {
-                relax(g, edgeTo, pq, p, q);
+                relax(g, edgeTo, pq, p, q, destNode);
             }
         }
 
@@ -61,12 +61,16 @@ public class Router {
         return res;
     }
 
-    private static void relax(GraphDB g, Map<Long, Long> edgeTo, PriorityQueue<Long> pq, long p, long q) {
+    private static void relax(GraphDB g, Map<Long, Long> edgeTo, PriorityQueue<Long> pq, long p, long q,
+            long destNode) {
         if (!pq.contains(q)) { // has been visited
             return;
         }
         if (g.getPriority(p) + g.distance(p, q) < g.getPriority(q)) {
-            g.changePriority(q, g.getPriority(p) + g.distance(p, q));
+            // A* search
+            g.changePriority(q, g.getPriority(p) + g.distance(p, q) + g.distance(q, destNode));
+            // dijkstra
+            // g.changePriority(q, g.getPriority(p) + g.distance(p, q));
             pq.add(q);
             edgeTo.put(q, p);
         }
