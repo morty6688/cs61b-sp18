@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -32,68 +31,57 @@ public class Router {
      * @param destlat The latitude of the destination location.
      * @return A list of node id's in the order visited on the shortest path.
      */
-    public static List<Long> shortestPath(GraphDB g, double stlon, double stlat, double destlon, double destlat) {
+    public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
+                                          double destlon, double destlat) {
+        long startND = g.closest(stlon, stlat);
+        long endND = g.closest(destlon, destlat);
 
-        long s = g.closest(stlon, stlat);
-        long t = g.closest(destlon, destlat);
-        Iterator<Long> i = g.vertices().iterator();
-        Map<Long, Double> passedDistance = new HashMap<>();
-        Map<Long, Double> estimateDistance = new HashMap<>();
-        List<Long> returnList = new ArrayList<>();
-        while (i.hasNext()) {
-            Long vID = i.next();
-            passedDistance.put(vID, Double.POSITIVE_INFINITY);
-            estimateDistance.put(vID, g.distance(vID, t));
-        }
+        //A*'s algorithm
+        List<Long> path = stpA(g, startND, endND);
+
+        return path;
+    }
+
+    public static List<Long> stpA(GraphDB g, long start, long end) {
         Map<Long, Long> edgeTo = new HashMap<>();
-        Set<Long> marked = new HashSet<>();
-        Comparator<Long> cmp = new Comparator<Long>() {
+        Map<Long, Double> distance = new HashMap<>();
+        Set<Long> visited = new HashSet<>();
+        PriorityQueue<Long> pq = new PriorityQueue<>(new Comparator<Long>() {
             @Override
             public int compare(Long o1, Long o2) {
-                if (passedDistance.get(o1) + estimateDistance.get(o1) < passedDistance.get(o2)
-                        + estimateDistance.get(o2)) {
-                    return -1;
-                } else if (passedDistance.get(o1) + estimateDistance.get(o1) == passedDistance.get(o2)
-                        + estimateDistance.get(o2)) {
-                    return 0;
-                } else {
-                    return 1;
+                return Double.compare(distance.get(o1) + g.distance(o1, end), distance.get(o2) + g.distance(o2, end));
+            }
+        });
+        edgeTo.put(start, start);
+        distance.put(start, 0.0);
+        pq.add(start);
+
+
+        while(pq.peek() != end) {
+            long head = pq.poll();
+            for(long temp : g.adjacent(head)) {
+                if(!visited.contains(temp)) {
+                    edgeTo.put(temp, head);
+                    distance.put(temp, distance.get(head) + g.distance(temp, head));
+                    pq.add(temp);
                 }
+                visited.add(head);
             }
-        };
-        PriorityQueue<Long> pq = new PriorityQueue<Long>(cmp);
-
-        passedDistance.replace(s, 0.0);
-        pq.add(s);
-        long vID = pq.poll();
-        marked.add(vID);
-
-        while (vID != t) {
-            for (long wID : g.adjacent(vID)) {
-                if (passedDistance.get(vID) + g.distance(vID, wID) < passedDistance.get(wID)) {
-                    passedDistance.replace(wID, passedDistance.get(vID) + g.distance(wID, vID));
-                    edgeTo.put(wID, vID);
-                }
-                pq.add(wID);
-            }
-            vID = pq.poll();
-            while (marked.contains(vID)) {
-                vID = pq.poll();
-            }
-            marked.add(vID);
         }
-        Stack<Long> stack = new Stack<>();
+        Stack<Long> path = new Stack<>();
+        long current = end;
+        while(current != start) {
+            path.push(current);
+            current = edgeTo.get(current);
+        }
+        path.push(start);
 
-        Long id = t;
-        stack.add(id);
-        while (id != s) {
-            stack.add(edgeTo.get(id));
-            id = edgeTo.get(id);
+        ArrayList<Long> stp = new ArrayList<>();
+        while(!path.empty()) {
+            stp.add(path.pop());
         }
-        while (!stack.empty()) {
-            returnList.add(stack.pop());
-        }
-        return returnList;
+
+        return stp;
     }
 
     /**
