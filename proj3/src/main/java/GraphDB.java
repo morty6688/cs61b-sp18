@@ -222,8 +222,8 @@ public class GraphDB {
         // Map<String, String> extraInfo;
         String name;
         Set<Long> adjs;
-        double priority = 0;
-        double distTo = 0;
+        double priority = Double.MAX_VALUE;
+        double distTo = Double.MAX_VALUE;
 
         Node(long id, double lon, double lat) {
             this.id = id;

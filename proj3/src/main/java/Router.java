@@ -37,9 +37,6 @@ public class Router {
         Set<Long> isVisited = new TreeSet<>();
 
         PriorityQueue<Long> pq = new PriorityQueue<>(g.getNodeComparator());
-        for (Long node : g.vertices()) {
-            g.changeDistTo(node, Double.MAX_VALUE);
-        }
         g.changeDistTo(stNode, 0);
         pq.add(stNode);
 
@@ -65,8 +62,9 @@ public class Router {
         }
 
         // clean
-        for (Long node : g.vertices()) {
-            g.changePriority(node, 0);
+        for (long node : g.vertices()) {
+            g.changePriority(node, Double.MAX_VALUE);
+            g.changeDistTo(node, Double.MAX_VALUE);
         }
 
         return res;
