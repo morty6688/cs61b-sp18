@@ -31,20 +31,20 @@ public class Router {
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat, double destlon,
                                           double destlat) {
-        long stNode = g.closest(stlon, stlat);
-        long destNode = g.closest(destlon, destlat);
+        Long stNode = g.closest(stlon, stlat);
+        Long destNode = g.closest(destlon, destlat);
         Map<Long, Long> edgeTo = new HashMap<>();
         Set<Long> isVisited = new HashSet<>();
 
         PriorityQueue<Long> pq = new PriorityQueue<>(g.getNodeComparator());
-        for (long node : g.vertices()) {
+        for (Long node : g.vertices()) {
             g.changeDistTo(node, Double.POSITIVE_INFINITY);
         }
         g.changeDistTo(stNode, 0);
         pq.add(stNode);
 
         while (!pq.isEmpty()) {
-            long v = pq.poll();
+            Long v = pq.poll();
             if (isVisited.contains(v)) {
                 continue;
             }
@@ -52,7 +52,7 @@ public class Router {
                 break;
             }
             isVisited.add(v);
-            for (long w : g.adjacent(v)) {
+            for (Long w : g.adjacent(v)) {
                 relax(g, edgeTo, pq, v, w, destNode);
             }
         }
@@ -72,8 +72,8 @@ public class Router {
         return res;
     }
 
-    private static void relax(GraphDB g, Map<Long, Long> edgeTo, PriorityQueue<Long> pq, long v,
-                              long w, long destNode) {
+    private static void relax(GraphDB g, Map<Long, Long> edgeTo, PriorityQueue<Long> pq, Long v,
+                              Long w, Long destNode) {
         // dijkstra
         if (g.getDistTo(v) + g.distance(v, w) < g.getDistTo(w)) {
             g.changeDistTo(w, g.getDistTo(v) + g.distance(v, w));
