@@ -67,7 +67,6 @@ public class Router {
         // clean
         for (Long node : g.vertices()) {
             g.changePriority(node, 0);
-            g.changeDistTo(node, 0);
         }
 
         return res;
