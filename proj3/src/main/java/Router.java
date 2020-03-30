@@ -1,11 +1,11 @@
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,11 +34,11 @@ public class Router {
         long stNode = g.closest(stlon, stlat);
         long destNode = g.closest(destlon, destlat);
         Map<Long, Long> edgeTo = new HashMap<>();
-        Set<Long> isVisited = new TreeSet<>();
+        Set<Long> isVisited = new HashSet<>();
 
         PriorityQueue<Long> pq = new PriorityQueue<>(g.getNodeComparator());
-        for (Long node : g.vertices()) {
-            g.changeDistTo(node, Double.MAX_VALUE);
+        for (long node : g.vertices()) {
+            g.changeDistTo(node, Double.POSITIVE_INFINITY);
         }
         g.changeDistTo(stNode, 0);
         pq.add(stNode);
@@ -67,6 +67,7 @@ public class Router {
         // clean
         for (Long node : g.vertices()) {
             g.changePriority(node, 0);
+            g.changeDistTo(node, 0);
         }
 
         return res;
