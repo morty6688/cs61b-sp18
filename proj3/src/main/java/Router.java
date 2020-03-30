@@ -60,6 +60,10 @@ public class Router {
         List<Long> res = new LinkedList<>();
         res.add(destNode);
         while (destNode != stNode) {
+            // cannot reach destNode
+            if (edgeTo.get(destNode) == null) {
+                return new LinkedList<>();
+            }
             res.add(0, edgeTo.get(destNode));
             destNode = edgeTo.get(destNode);
         }
@@ -67,7 +71,6 @@ public class Router {
         // clean
         for (Long node : g.vertices()) {
             g.changePriority(node, 0);
-            g.changeDistTo(node, 0);
         }
 
         return res;
