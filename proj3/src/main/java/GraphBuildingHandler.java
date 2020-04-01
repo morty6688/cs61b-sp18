@@ -89,7 +89,11 @@ public class GraphBuildingHandler extends DefaultHandler {
             curWay = w;
         } else if (activeState.equals("way") && qName.equals("nd")) {
             /* While looking at a way, we found a <nd...> tag. */
-            nodesInCurWay.add(Long.parseLong(attributes.getValue("ref")));
+            long nodeId = Long.parseLong(attributes.getValue("ref"));
+            nodesInCurWay.add(nodeId);
+            if (!g.getNode(nodeId).wayIds.contains(curWay.id)) {
+                g.getNode(nodeId).wayIds.add(curWay.id);
+            }
         } else if (activeState.equals("way") && qName.equals("tag")) {
             /* While looking at a way, we found a <tag...> tag. */
             String k = attributes.getValue("k");

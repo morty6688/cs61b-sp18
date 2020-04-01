@@ -224,6 +224,7 @@ public class GraphDB {
         Set<Long> adjs;
         double priority = 0;
         double distTo = 0;
+        List<Long> wayIds;
 
         Node(long id, double lon, double lat) {
             this.id = id;
@@ -231,6 +232,7 @@ public class GraphDB {
             this.lat = lat;
             // this.extraInfo = new HashMap<>();
             this.adjs = new LinkedHashSet<>();
+            this.wayIds = new ArrayList<>();
         }
     }
 
@@ -257,6 +259,10 @@ public class GraphDB {
         return new NodeComparator();
     }
 
+    public Node getNode(long nodeId) {
+        return nodes.get(nodeId);
+    }
+
     static class Way {
         long id;
         String maxSpeed;
@@ -270,4 +276,13 @@ public class GraphDB {
         }
 
     }
+
+    public List<Long> getWays(long nodeId) {
+        return nodes.get(nodeId).wayIds;
+    }
+
+    public String getWayName(long wayId) {
+        return ways.get(wayId).name;
+    }
+
 }

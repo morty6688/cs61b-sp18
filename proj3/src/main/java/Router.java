@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -8,6 +9,7 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * This class provides a shortestPath method for finding routes between two points
@@ -99,7 +101,81 @@ public class Router {
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
-        return null; // FIXME
+        List<NavigationDirection> res = new ArrayList<>();
+
+        NavigationDirection cur = new NavigationDirection();
+        cur.direction = NavigationDirection.START;
+        cur.way = getWayName(g, route.get(0), route.get(1));
+        cur.distance += g.distance(route.get(0), route.get(1));
+
+        for (int i = 1, j = 2; j < route.size(); i++, j++) {
+            if (!getWayName(g, route.get(i), route.get(j)).equals(cur.way)) {
+                res.add(cur);
+                cur = new NavigationDirection();
+                cur.way = getWayName(g, route.get(i), route.get(j));
+
+                double prevBearing = g.bearing(route.get(i - 1), route.get(i));
+                double curBearing = g.bearing(route.get(i), route.get(j));
+                cur.direction = convertBearingToDirection(prevBearing, curBearing);
+
+                cur.distance += g.distance(route.get(i), route.get(j));
+                continue;
+            }
+            cur.distance += g.distance(route.get(i), route.get(j));
+        }
+        res.add(cur);
+        return res;
+    }
+
+    /** 
+     * two node can and only can decide a way, if this way has no name, return black String.
+     */
+    private static String getWayName(GraphDB g, long node1, long node2) {
+        String noName = "";
+
+        List<Long> ways1 = g.getWays(node1);
+        List<Long> ways2 = g.getWays(node2);
+
+        // intersection
+        List<Long> intersection = ways1.stream().filter(i -> ways2.contains(i)).collect(Collectors.toList());
+
+        if (!intersection.isEmpty()) {
+            if (g.getWayName(intersection.get(0)) == null) {
+                return noName;
+            } else {
+                return g.getWayName(intersection.get(0));
+            }
+        }
+
+        return noName;
+    }
+
+    /**
+     * decide relative bearing according to previous bearing and current bearing.
+     */
+    private static int convertBearingToDirection(double prevBearing, double curBearing) {
+        double relativeBearing = curBearing - prevBearing;
+        if (relativeBearing > 180) {
+            relativeBearing -= 360;
+        } else if (relativeBearing < -180) {
+            relativeBearing += 360;
+        }
+
+        if (relativeBearing < -100) {
+            return NavigationDirection.SHARP_LEFT;
+        } else if (relativeBearing < -30) {
+            return NavigationDirection.LEFT;
+        } else if (relativeBearing < -15) {
+            return NavigationDirection.SLIGHT_LEFT;
+        } else if (relativeBearing < 15) {
+            return NavigationDirection.STRAIGHT;
+        } else if (relativeBearing < 30) {
+            return NavigationDirection.SLIGHT_RIGHT;
+        } else if (relativeBearing < 100) {
+            return NavigationDirection.RIGHT;
+        } else {
+            return NavigationDirection.SHARP_RIGHT;
+        }
     }
 
     /**
