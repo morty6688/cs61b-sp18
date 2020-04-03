@@ -1,22 +1,25 @@
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Trie {
     static class TrieNode {
         private Map<Character, TrieNode> children;
-        private String name;
+        private List<String> names;
         private boolean isWord;
 
         public TrieNode() {
             this.children = new HashMap<>();
+            this.names = new ArrayList<>();
         }
 
         public Map<Character, TrieNode> getChildren() {
             return children;
         }
 
-        public String getName() {
-            return name;
+        public List<String> getNames() {
+            return names;
         }
 
         public boolean isWord() {
@@ -36,7 +39,9 @@ public class Trie {
         }
         if (i == key.length()) {
             cur.isWord = true;
-            cur.name = name;
+            if (!cur.names.contains(name)) {
+                cur.names.add(name);
+            }
             return cur;
         }
         char c = key.charAt(i);

@@ -232,7 +232,7 @@ public class GraphDB {
             return res;
         }
         if (prefixEnd.isWord()) {
-            res.add(prefixEnd.getName());
+            res.addAll(prefixEnd.getNames());
         }
         for (char c : prefixEnd.getChildren().keySet()) {
             colHelper(prefix + c, res, prefixEnd.getChildren().get(c));
@@ -242,7 +242,7 @@ public class GraphDB {
 
     private void colHelper(String s, List<String> res, Trie.TrieNode node) {
         if (node.isWord()) {
-            res.add(node.getName());
+            res.addAll(node.getNames());
         }
         for (char c : node.getChildren().keySet()) {
             colHelper(s + c, res, node.getChildren().get(c));
