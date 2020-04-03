@@ -257,17 +257,16 @@ public class GraphDB {
         }
     }
 
-    public List<Long> getLocationIds(String locationName) {
-        return locations.get(locationName);
-    }
-
     public List<String> getLocationsByPrefix(String prefix) {
         return collectFromTrie(prefix);
     }
 
     public List<Map<String, Object>> getLocations(String locationName) {
         List<Map<String, Object>> res = new LinkedList<>();
-        for (long id : getLocationIds(locationName)) {
+        if (!locations.containsKey(locationName)) {
+            return res;
+        }
+        for (long id : locations.get(locationName)) {
             res.add(getNameNodeAsMap(id));
         }
         return res;
