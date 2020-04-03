@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -258,6 +259,18 @@ public class GraphDB {
 
     public List<Long> getLocationIds(String locationName) {
         return locations.get(locationName);
+    }
+
+    public List<String> getLocationsByPrefix(String prefix) {
+        return collectFromTrie(prefix);
+    }
+
+    public List<Map<String, Object>> getLocations(String locationName) {
+        List<Map<String, Object>> res = new LinkedList<>();
+        for (long id : getLocationIds(locationName)) {
+            res.add(getNameNodeAsMap(id));
+        }
+        return res;
     }
 
     static class Node {

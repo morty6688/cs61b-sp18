@@ -137,7 +137,8 @@ public class Router {
         List<Long> ways2 = g.getWays(node2);
 
         // intersection
-        List<Long> intersection = ways1.stream().filter(i -> ways2.contains(i)).collect(Collectors.toList());
+        List<Long> intersection =
+                ways1.stream().filter(ways2::contains).collect(Collectors.toList());
 
         if (!intersection.isEmpty()) {
             if (g.getWayName(intersection.get(0)) == null) {
