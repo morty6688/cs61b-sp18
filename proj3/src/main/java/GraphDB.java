@@ -2,7 +2,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -33,6 +35,9 @@ public class GraphDB {
 
     private final Map<Long, Node> nodes = new LinkedHashMap<>();
     private final Map<Long, Way> ways = new LinkedHashMap<>();
+    private final Trie trieForNodeName = new Trie();
+    private final Map<Long, NameNode> nameNodes = new LinkedHashMap<>();
+    private final Map<String, List<Long>> locations = new LinkedHashMap<>();
 
     /**
      * Example constructor shows how to create and start an XML parser.
@@ -215,6 +220,46 @@ public class GraphDB {
         nodes.get(node1).adjs.add(node2);
     }
 
+    public void addCleanNameToTrie(String cleanName, String name) {
+        trieForNodeName.add(cleanName, name);
+    }
+
+    public List<String> collectFromTrie(String prefix) {
+        Trie.TrieNode prefixEnd = trieForNodeName.findNode(prefix);
+        List<String> res = new ArrayList<>();
+        if (prefixEnd == null) {
+            return res;
+        }
+        if (prefixEnd.isWord()) {
+            res.add(prefixEnd.getName());
+        }
+        for (char c : prefixEnd.getChildren().keySet()) {
+            colHelper(prefix + c, res, prefixEnd.getChildren().get(c));
+        }
+        return res;
+    }
+
+    private void colHelper(String s, List<String> res, Trie.TrieNode node) {
+        if (node.isWord()) {
+            res.add(node.getName());
+        }
+        for (char c : node.getChildren().keySet()) {
+            colHelper(s + c, res, node.getChildren().get(c));
+        }
+    }
+
+    public void addLocation(String name, long id) {
+        if (locations.containsKey(name)) {
+            locations.get(name).add(id);
+        } else {
+            locations.put(name, new ArrayList<>(Arrays.asList(id)));
+        }
+    }
+
+    public List<Long> getLocationIds(String locationName) {
+        return locations.get(locationName);
+    }
+
     static class Node {
         long id;
         double lon;
@@ -285,4 +330,35 @@ public class GraphDB {
         return ways.get(wayId).name;
     }
 
+    static class NameNode {
+        long id;
+        double lon;
+        double lat;
+        String name;
+
+        public NameNode(long id, double lon, double lat, String name) {
+            this.id = id;
+            this.lon = lon;
+            this.lat = lat;
+            this.name = name;
+        }
+    }
+
+    public void addNameNode(NameNode n) {
+        nameNodes.put(n.id, n);
+    }
+
+    public String getNodeName(long id) {
+        return nameNodes.get(id).name;
+    }
+
+    public Map<String, Object> getNameNodeAsMap(long id) {
+        NameNode n = nameNodes.get(id);
+        Map<String, Object> res = new HashMap<>();
+        res.put("id", n.id);
+        res.put("lat", n.lat);
+        res.put("lon", n.lon);
+        res.put("name", n.name);
+        return res;
+    }
 }

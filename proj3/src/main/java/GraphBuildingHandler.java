@@ -118,6 +118,12 @@ public class GraphBuildingHandler extends DefaultHandler {
                 "k").equals("name")) {
             /* While looking at a node, we found a <tag...> with k="name". */
             curNode.name = attributes.getValue("v");
+            String cleanName = GraphDB.cleanString(curNode.name);
+            g.addCleanNameToTrie(cleanName, curNode.name);
+            GraphDB.NameNode nameNode = new GraphDB.NameNode(curNode.id, curNode.lon,
+                                        curNode.lat, curNode.name);
+            g.addNameNode(nameNode);
+            g.addLocation(curNode.name, curNode.id);
         }
     }
 

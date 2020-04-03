@@ -1,24 +1,27 @@
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import static spark.Spark.before;
+import static spark.Spark.get;
+import static spark.Spark.halt;
+import static spark.Spark.staticFileLocation;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-import java.io.IOException;
 
+import javax.imageio.ImageIO;
 
 /* Maven is used to pull in these dependencies. */
 import com.google.gson.Gson;
-
-import static spark.Spark.*;
 
 /**
  * This MapServer class is the entry point for running the JavaSpark web server for the BearMaps
@@ -81,7 +84,6 @@ public class MapServer {
     private static GraphDB graph;
     private static List<Long> route = new LinkedList<>();
     /* Define any static variables here. Do not define any instance variables of MapServer. */
-
 
     /**
      * Place any initialization statements that will be run before the server main loop here.
@@ -285,7 +287,7 @@ public class MapServer {
      * cleaned <code>prefix</code>.
      */
     public static List<String> getLocationsByPrefix(String prefix) {
-        return new LinkedList<>();
+        return graph.collectFromTrie(prefix);
     }
 
     /**
@@ -301,7 +303,11 @@ public class MapServer {
      * "id" : Number, The id of the node. <br>
      */
     public static List<Map<String, Object>> getLocations(String locationName) {
-        return new LinkedList<>();
+        List<Map<String, Object>> res = new LinkedList<>();
+        for (long id : graph.getLocationIds(locationName)) {
+            res.add(graph.getNameNodeAsMap(id));
+        }
+        return res;
     }
 
     /**
@@ -336,7 +342,7 @@ public class MapServer {
         }
         StringBuilder sb = new StringBuilder();
         int step = 1;
-        for (Router.NavigationDirection d: directions) {
+        for (Router.NavigationDirection d : directions) {
             sb.append(String.format("%d. %s <br>", step, d));
             step += 1;
         }
