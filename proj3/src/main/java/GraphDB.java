@@ -277,7 +277,6 @@ public class GraphDB {
         double lon;
         double lat;
         // Map<String, String> extraInfo;
-        String name;
         Set<Long> adjs;
         double priority = 0;
         double distTo = 0;
