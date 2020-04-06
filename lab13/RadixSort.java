@@ -40,15 +40,16 @@ public class RadixSort {
      */
     private static void sortHelperLSD(String[] asciis, int index) {
         // Optional LSD helper method for required LSD radix sort
-        int[] counts = new int[256];
+        int R = 256;
+        int[] counts = new int[R + 1];
         for (String item : asciis) {
-            char c = charAtOrMinChar(index, item);
+            int c = charAtOrMinChar(index, item);
             counts[c]++;
         }
 
-        int[] starts = new int[256];
+        int[] starts = new int[R + 1];
         int pos = 0;
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < R + 1; i++) {
             starts[i] = pos;
             pos += counts[i];
         }
@@ -56,7 +57,7 @@ public class RadixSort {
         String[] sorted = new String[asciis.length];
         for (int i = 0; i < asciis.length; i++) {
             String item = asciis[i];
-            char c = charAtOrMinChar(index, item);
+            int c = charAtOrMinChar(index, item);
             int place = starts[c];
             sorted[place] = item;
             starts[c]++;
@@ -67,14 +68,12 @@ public class RadixSort {
         }
     }
 
-    private static char charAtOrMinChar(int index, String item) {
-        char c;
+    private static int charAtOrMinChar(int index, String item) {
         if (index < item.length() && index >= 0) {
-            c = item.charAt(index);
+            return item.charAt(index) + 1;
         } else {
-            c = (char) 0;
+            return 0;
         }
-        return c;
     }
 
     /**
@@ -97,6 +96,14 @@ public class RadixSort {
         String[] res = RadixSort.sort(asciis);
         for (String s : res) {
             System.out.print(s + " ");
+        }
+
+        System.out.println();
+
+        String[] asciis2 = new String[] {"  ", "      ", "    ", " "};
+        String[] res2 = RadixSort.sort(asciis2);
+        for (String s : res2) {
+            System.out.print(s + ",");
         }
     }
 }
