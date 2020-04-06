@@ -27,12 +27,10 @@ public class RadixSort {
             }
         }
         String[] res = Arrays.copyOf(asciis, asciis.length);
-        // int[] num = new int[asciis.length];
         Map<String, Integer> m = new HashMap<>();
         for (int i = 0; i < res.length; i++) {
             String s = res[i];
             if (s.length() < maxLen) {
-                // num[i] = maxLen - s.length();
                 int num = maxLen - s.length();
                 res[i] = addSth(s, num);
                 m.put(res[i], num);
@@ -53,22 +51,13 @@ public class RadixSort {
     }
 
     private static String removeSth(String s, int num) {
-        if (num == 0) {
-            return s;
-        }
-        StringBuilder sb = new StringBuilder(s);
-        for (int j = 0; j < num; j++) {
-            sb.deleteCharAt(sb.length() - 1);
-        }
-        return sb.toString();
+        return s.substring(0, s.length() - num);
     }
 
     private static String addSth(String s, int num) {
-        StringBuilder sb = new StringBuilder(s);
-        for (int j = 0; j < num; j++) {
-            sb.append((char) 0);
-        }
-        return sb.toString();
+        char[] chars = new char[num];
+        Arrays.fill(chars, (char) 0);
+        return s + new String(chars);
     }
 
     /**
@@ -122,19 +111,6 @@ public class RadixSort {
     }
 
     public static void main(String[] args) {
-        // String[] asciis = new String[] { "356", "112", "904", "294", "209", "820", "394", "810" };
-        // // RadixSort.sortHelperLSD(asciis, 0);
-        // // for (String s : asciis) {
-        // //     System.out.print(s + " ");
-        // // }
-
-        // String[] res = RadixSort.sort(asciis);
-        // for (String s : res) {
-        //     System.out.print(s + " ");
-        // }
-
-        System.out.println();
-
         String[] asciis2 = new String[] { "56", "112", "94", "4", "9", "82", "394", "80" };
         String[] res2 = RadixSort.sort(asciis2);
         for (String s : res2) {
