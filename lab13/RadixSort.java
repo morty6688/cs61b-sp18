@@ -1,6 +1,4 @@
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Class for doing Radix sort
@@ -26,38 +24,12 @@ public class RadixSort {
                 maxLen = s.length();
             }
         }
-        String[] res = Arrays.copyOf(asciis, asciis.length);
-        Map<String, Integer> m = new HashMap<>();
-        for (int i = 0; i < res.length; i++) {
-            String s = res[i];
-            if (s.length() < maxLen) {
-                int num = maxLen - s.length();
-                res[i] = addSth(s, num);
-                m.put(res[i], num);
-            } else {
-                m.put(res[i], 0);
-            }
-        }
 
+        String[] res = Arrays.copyOf(asciis, asciis.length);
         for (int i = maxLen - 1; i >= 0; i--) {
             sortHelperLSD(res, i);
         }
-
-        for (int i = 0; i < res.length; i++) {
-            String s = res[i];
-            res[i] = removeSth(s, m.get(s));
-        }
         return res;
-    }
-
-    private static String removeSth(String s, int num) {
-        return s.substring(0, s.length() - num);
-    }
-
-    private static String addSth(String s, int num) {
-        char[] chars = new char[num];
-        Arrays.fill(chars, (char) 0);
-        return s + new String(chars);
     }
 
     /**
@@ -70,7 +42,7 @@ public class RadixSort {
         // Optional LSD helper method for required LSD radix sort
         int[] counts = new int[256];
         for (String item : asciis) {
-            char c = item.charAt(index);
+            char c = charAtOrMinChar(index, item);
             counts[c]++;
         }
 
@@ -84,7 +56,7 @@ public class RadixSort {
         String[] sorted = new String[asciis.length];
         for (int i = 0; i < asciis.length; i++) {
             String item = asciis[i];
-            char c = item.charAt(index);
+            char c = charAtOrMinChar(index, item);
             int place = starts[c];
             sorted[place] = item;
             starts[c]++;
@@ -93,6 +65,16 @@ public class RadixSort {
         for (int i = 0; i < asciis.length; i++) {
             asciis[i] = sorted[i];
         }
+    }
+
+    private static char charAtOrMinChar(int index, String item) {
+        char c;
+        if (index < item.length() && index >= 0) {
+            c = item.charAt(index);
+        } else {
+            c = (char) 0;
+        }
+        return c;
     }
 
     /**
@@ -111,9 +93,9 @@ public class RadixSort {
     }
 
     public static void main(String[] args) {
-        String[] asciis2 = new String[] { "56", "112", "94", "4", "9", "82", "394", "80" };
-        String[] res2 = RadixSort.sort(asciis2);
-        for (String s : res2) {
+        String[] asciis = new String[] { "56", "112", "94", "4", "9", "82", "394", "80" };
+        String[] res = RadixSort.sort(asciis);
+        for (String s : res) {
             System.out.print(s + " ");
         }
     }
