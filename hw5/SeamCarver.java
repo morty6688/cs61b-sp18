@@ -9,7 +9,7 @@ public class SeamCarver {
     private boolean isVertical = true;
 
     public SeamCarver(Picture picture) {
-        this.picture = picture;
+        this.picture = new Picture(picture);
         this.width = picture.width();
         this.height = picture.height();
     }
@@ -44,14 +44,14 @@ public class SeamCarver {
             right = y < width - 1 ? picture.get(x, y + 1) : picture.get(x, 0);
         }
 
-        int Rx = left.getRed() - right.getRed();
-        int Gx = left.getGreen() - right.getGreen();
-        int Bx = left.getBlue() - right.getBlue();
-        int Ry = up.getRed() - down.getRed();
-        int Gy = up.getGreen() - down.getGreen();
-        int By = up.getBlue() - down.getBlue();
+        int rx = left.getRed() - right.getRed();
+        int gx = left.getGreen() - right.getGreen();
+        int bx = left.getBlue() - right.getBlue();
+        int ry = up.getRed() - down.getRed();
+        int gy = up.getGreen() - down.getGreen();
+        int by = up.getBlue() - down.getBlue();
 
-        return Rx * Rx + Gx * Gx + Bx * Bx + Ry * Ry + Gy * Gy + By * By;
+        return rx * rx + gx * gx + bx * bx + ry * ry + gy * gy + by * by;
     }
 
     // sequence of indices for horizontal seam
