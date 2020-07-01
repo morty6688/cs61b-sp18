@@ -44,7 +44,7 @@ public class TETile implements Serializable {
      *                        correct size (16x16)
      */
     public TETile(char character, Color textColor, Color backgroundColor, String description,
-                  String filepath) {
+            String filepath) {
         this.character = character;
         this.textColor = textColor;
         this.backgroundColor = backgroundColor;
@@ -177,8 +177,8 @@ public class TETile implements Serializable {
         for (int y = height - 1; y >= 0; y -= 1) {
             for (int x = 0; x < width; x += 1) {
                 if (world[x][y] == null) {
-                    throw new IllegalArgumentException("Tile at position x=" + x + ",  y=" + y
-                            + " is null.");
+                    throw new IllegalArgumentException(
+                            "Tile at position x=" + x + ",  y=" + y + " is null.");
                 }
                 sb.append(world[x][y].character());
             }

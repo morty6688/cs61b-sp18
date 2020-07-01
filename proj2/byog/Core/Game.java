@@ -279,6 +279,7 @@ public class Game {
         return sb.toString();
     }
 
+    // reference: https://zhuanlan.zhihu.com/p/27381213
     private TETile[][] generateWorld(long seed) {
         TETile[][] world = new TETile[WIDTH][HEIGHT];
         initializeWorld(world);
@@ -362,11 +363,11 @@ public class Game {
     private List<Room> generateRooms(TETile[][] world, Random r, int roomNum) {
         Room.setRoomMaxNum(roomNum);
         List<Room> rooms = new ArrayList<>();
-        for (int i = 0; i < Room.getRoomMaxNum(); ) {
+        for (int i = 0; i < Room.getRoomMaxNum();) {
             Room newRoom;
             do {
-                Position p1 = new Position(decideXOrY(r, 1, WIDTH - 3), decideXOrY(r, 1,
-                        HEIGHT - 3));
+                Position p1 =
+                        new Position(decideXOrY(r, 1, WIDTH - 3), decideXOrY(r, 1, HEIGHT - 3));
                 Position p2 = new Position(decideXOrY(r, p1.getX() + 1, WIDTH - 1),
                         decideXOrY(r, p1.getY() + 1, HEIGHT - 1));
                 newRoom = new Room(p1, p2);
@@ -416,8 +417,8 @@ public class Game {
     private Connector nextConnector(Random r, Position p, TETile[][] world) {
         List<Connector> possibleConnectors = new ArrayList<>();
         for (Direction d : Direction.values()) {
-            Connector.addConnectableDirection(possibleConnectors, world, Tileset.UNDEVFLOOR, d,
-                    p, WIDTH, HEIGHT);
+            Connector.addConnectableDirection(possibleConnectors, world, Tileset.UNDEVFLOOR, d, p,
+                    WIDTH, HEIGHT);
         }
         if (possibleConnectors.isEmpty()) {
             return null;

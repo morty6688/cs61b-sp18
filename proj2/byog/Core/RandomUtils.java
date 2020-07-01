@@ -260,14 +260,14 @@ public class RandomUtils {
         double sum = 0.0;
         for (int i = 0; i < probabilities.length; i++) {
             if (!(probabilities[i] >= 0.0)) {
-                throw new IllegalArgumentException("array entry " + i + " must be nonnegative: "
-                                                   + probabilities[i]);
+                throw new IllegalArgumentException(
+                        "array entry " + i + " must be nonnegative: " + probabilities[i]);
             }
             sum += probabilities[i];
         }
         if (sum > 1.0 + eps || sum < 1.0 - eps) {
-            throw new IllegalArgumentException("sum of array entries does not approximately "
-                                               + "equal 1.0: " + sum);
+            throw new IllegalArgumentException(
+                    "sum of array entries does not approximately " + "equal 1.0: " + sum);
         }
 
         // the for loop may not return a value when both r is (nearly) 1.0 and when the
@@ -302,8 +302,8 @@ public class RandomUtils {
         long sum = 0;
         for (int i = 0; i < frequencies.length; i++) {
             if (frequencies[i] < 0) {
-                throw new IllegalArgumentException("array entry " + i + " must be nonnegative: "
-                                                   + frequencies[i]);
+                throw new IllegalArgumentException(
+                        "array entry " + i + " must be nonnegative: " + frequencies[i]);
             }
             sum += frequencies[i];
         }
@@ -355,7 +355,7 @@ public class RandomUtils {
         validateNotNull(a);
         int n = a.length;
         for (int i = 0; i < n; i++) {
-            int r = i + uniform(random, n - i);     // between i and n-1
+            int r = i + uniform(random, n - i); // between i and n-1
             Object temp = a[i];
             a[i] = a[r];
             a[r] = temp;
@@ -372,7 +372,7 @@ public class RandomUtils {
         validateNotNull(a);
         int n = a.length;
         for (int i = 0; i < n; i++) {
-            int r = i + uniform(random, n - i);     // between i and n-1
+            int r = i + uniform(random, n - i); // between i and n-1
             double temp = a[i];
             a[i] = a[r];
             a[r] = temp;
@@ -389,7 +389,7 @@ public class RandomUtils {
         validateNotNull(a);
         int n = a.length;
         for (int i = 0; i < n; i++) {
-            int r = i + uniform(random, n - i);     // between i and n-1
+            int r = i + uniform(random, n - i); // between i and n-1
             int temp = a[i];
             a[i] = a[r];
             a[r] = temp;
@@ -406,7 +406,7 @@ public class RandomUtils {
         validateNotNull(a);
         int n = a.length;
         for (int i = 0; i < n; i++) {
-            int r = i + uniform(random, n - i);     // between i and n-1
+            int r = i + uniform(random, n - i); // between i and n-1
             char temp = a[i];
             a[i] = a[r];
             a[r] = temp;
@@ -427,7 +427,7 @@ public class RandomUtils {
         validateSubarrayIndices(lo, hi, a.length);
 
         for (int i = lo; i < hi; i++) {
-            int r = i + uniform(random, hi - i);     // between i and hi-1
+            int r = i + uniform(random, hi - i); // between i and hi-1
             Object temp = a[i];
             a[i] = a[r];
             a[r] = temp;
@@ -448,7 +448,7 @@ public class RandomUtils {
         validateSubarrayIndices(lo, hi, a.length);
 
         for (int i = lo; i < hi; i++) {
-            int r = i + uniform(random, hi - i);     // between i and hi-1
+            int r = i + uniform(random, hi - i); // between i and hi-1
             double temp = a[i];
             a[i] = a[r];
             a[r] = temp;
@@ -469,7 +469,7 @@ public class RandomUtils {
         validateSubarrayIndices(lo, hi, a.length);
 
         for (int i = lo; i < hi; i++) {
-            int r = i + uniform(random, hi - i);     // between i and hi-1
+            int r = i + uniform(random, hi - i); // between i and hi-1
             int temp = a[i];
             a[i] = a[r];
             a[r] = temp;
@@ -515,12 +515,12 @@ public class RandomUtils {
         }
         int[] perm = new int[k];
         for (int i = 0; i < k; i++) {
-            int r = uniform(random, i + 1);    // between 0 and i
+            int r = uniform(random, i + 1); // between 0 and i
             perm[i] = perm[r];
             perm[r] = i;
         }
         for (int i = k; i < n; i++) {
-            int r = uniform(random, i + 1);    // between 0 and i
+            int r = uniform(random, i + 1); // between 0 and i
             if (r < k) {
                 perm[r] = i;
             }
@@ -539,8 +539,8 @@ public class RandomUtils {
     // throw an exception unless 0 <= lo <= hi <= length
     private static void validateSubarrayIndices(int lo, int hi, int length) {
         if (lo < 0 || hi > length || lo > hi) {
-            throw new IllegalArgumentException("subarray indices out of bounds: [" + lo + ", "
-                                               + hi + ")");
+            throw new IllegalArgumentException(
+                    "subarray indices out of bounds: [" + lo + ", " + hi + ")");
         }
     }
 }
