@@ -319,22 +319,26 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     }
 
     private void setBlack(Node node) {
-        if (node != null)
+        if (node != null) {
             node.color = BLACK;
+        }
     }
 
     private void setRed(Node node) {
-        if (node != null)
+        if (node != null) {
             node.color = RED;
+        }
     }
 
     private void setParent(Node node, Node parent) {
-        if (node != null)
+        if (node != null) {
             node.parent = parent;
+        }
     }
 
     private void setColor(Node node, boolean color) {
-        if (node != null)
+        if (node != null) {
             node.color = color;
+        }
     }
 }
