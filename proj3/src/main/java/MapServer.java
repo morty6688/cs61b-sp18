@@ -62,16 +62,16 @@ public class MapServer {
      * lrlat : lower right corner latitude,<br> lrlon : lower right corner longitude <br>
      * w : user viewport window width in pixels,<br> h : user viewport height in pixels.
      **/
-    private static final String[] REQUIRED_RASTER_REQUEST_PARAMS = {"ullat", "ullon", "lrlat",
-        "lrlon", "w", "h"};
+    private static final String[] REQUIRED_RASTER_REQUEST_PARAMS =
+        {"ullat", "ullon", "lrlat", "lrlon", "w", "h"};
     /**
      * Each route request to the server will have the following parameters
      * as keys in the params map.<br>
      * start_lat : start point latitude,<br> start_lon : start point longitude,<br>
      * end_lat : end point latitude, <br>end_lon : end point longitude.
      **/
-    private static final String[] REQUIRED_ROUTE_REQUEST_PARAMS = {"start_lat", "start_lon",
-        "end_lat", "end_lon"};
+    private static final String[] REQUIRED_ROUTE_REQUEST_PARAMS =
+        {"start_lat", "start_lon", "end_lat", "end_lon"};
 
     /**
      * The result of rastering must be a map containing all of the
@@ -109,8 +109,7 @@ public class MapServer {
         /* Define the raster endpoint for HTTP GET requests. I use anonymous functions to define
          * the request handlers. */
         get("/raster", (req, res) -> {
-            HashMap<String, Double> params =
-                    getRequestParams(req, REQUIRED_RASTER_REQUEST_PARAMS);
+            HashMap<String, Double> params = getRequestParams(req, REQUIRED_RASTER_REQUEST_PARAMS);
             /* The png image is written to the ByteArrayOutputStream */
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             /* getMapRaster() does almost all the work for this API call */
@@ -131,8 +130,7 @@ public class MapServer {
 
         /* Define the routing endpoint for HTTP GET requests. */
         get("/route", (req, res) -> {
-            HashMap<String, Double> params =
-                    getRequestParams(req, REQUIRED_ROUTE_REQUEST_PARAMS);
+            HashMap<String, Double> params = getRequestParams(req, REQUIRED_ROUTE_REQUEST_PARAMS);
             route = Router.shortestPath(graph, params.get("start_lon"), params.get("start_lat"),
                     params.get("end_lon"), params.get("end_lat"));
             String directions = getDirectionsText();
@@ -180,8 +178,8 @@ public class MapServer {
      * @param requiredParams TestParams to validate.
      * @return A populated map of input parameter to it's numerical value.
      */
-    private static HashMap<String, Double> getRequestParams(
-            spark.Request req, String[] requiredParams) {
+    private static HashMap<String, Double> getRequestParams(spark.Request req,
+            String[] requiredParams) {
         Set<String> reqParams = req.queryParams();
         HashMap<String, Double> params = new HashMap<>();
         for (String param : requiredParams) {
@@ -205,7 +203,7 @@ public class MapServer {
      * we have made this into provided code since it was just a bit too low level.
      */
     private static void writeImagesToOutputStream(Map<String, Object> rasteredImageParams,
-                                                  ByteArrayOutputStream os) {
+            ByteArrayOutputStream os) {
         String[][] renderGrid = (String[][]) rasteredImageParams.get("render_grid");
         int numVertTiles = renderGrid.length;
         int numHorizTiles = renderGrid[0].length;
@@ -237,13 +235,13 @@ public class MapServer {
         if (route != null && !route.isEmpty()) {
             Graphics2D g2d = (Graphics2D) graphic;
             g2d.setColor(MapServer.ROUTE_STROKE_COLOR);
-            g2d.setStroke(new BasicStroke(MapServer.ROUTE_STROKE_WIDTH_PX,
-                    BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2d.setStroke(new BasicStroke(MapServer.ROUTE_STROKE_WIDTH_PX, BasicStroke.CAP_ROUND,
+                    BasicStroke.JOIN_ROUND));
             route.stream().reduce((v, w) -> {
                 g2d.drawLine((int) ((graph.lon(v) - ullon) * (1 / wdpp)),
-                             (int) ((ullat - graph.lat(v)) * (1 / hdpp)),
-                             (int) ((graph.lon(w) - ullon) * (1 / wdpp)),
-                             (int) ((ullat - graph.lat(w)) * (1 / hdpp)));
+                        (int) ((ullat - graph.lat(v)) * (1 / hdpp)),
+                        (int) ((graph.lon(w) - ullon) * (1 / wdpp)),
+                        (int) ((ullat - graph.lat(w)) * (1 / hdpp)));
                 return w;
             });
         }

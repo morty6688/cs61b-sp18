@@ -39,6 +39,7 @@ public class GraphDB {
     private final Trie trieForNodeName = new Trie();
     private final Map<Long, NameNode> nameNodes = new LinkedHashMap<>();
     private final Map<String, List<Long>> locations = new LinkedHashMap<>();
+    private final KdTree kdTreeForNearestNeighbor = new KdTree();
 
     /**
      * Example constructor shows how to create and start an XML parser.
@@ -60,6 +61,10 @@ public class GraphDB {
             e.printStackTrace();
         }
         clean();
+
+        for (long node : nodes.keySet()) {
+            addToKdTree(nodes.get(node));
+        }
     }
 
     /**
@@ -168,15 +173,7 @@ public class GraphDB {
      * @return The id of the node in the graph closest to the target.
      */
     long closest(double lon, double lat) {
-        double dist = 1e9;
-        long target = -1;
-        for (Long node : nodes.keySet()) {
-            if (distance(lon, lat, lon(node), lat(node)) < dist) {
-                dist = distance(lon, lat, lon(node), lat(node));
-                target = node;
-            }
-        }
-        return target;
+        return kdTreeForNearestNeighbor.nearest(lon, lat);
     }
 
     /**
@@ -219,6 +216,10 @@ public class GraphDB {
 
     void addAdj(Long node1, Long node2) {
         nodes.get(node1).adjs.add(node2);
+    }
+
+    public void addToKdTree(GraphDB.Node n) {
+        kdTreeForNearestNeighbor.insert(n);
     }
 
     public void addCleanNameToTrie(String cleanName, String name) {

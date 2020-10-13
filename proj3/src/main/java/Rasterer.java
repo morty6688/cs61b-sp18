@@ -9,9 +9,8 @@ import java.util.Map;
  */
 public class Rasterer {
     private static double[] depthLonDPP = new double[8];
-    private static final double INITLRLON = MapServer.ROOT_LRLON, INITULLON =
-            MapServer.ROOT_ULLON, INITLRLAT = MapServer.ROOT_LRLAT, INITULLAT =
-            MapServer.ROOT_ULLAT;
+    private static final double INITLRLON = MapServer.ROOT_LRLON, INITULLON = MapServer.ROOT_ULLON,
+            INITLRLAT = MapServer.ROOT_LRLAT, INITULLAT = MapServer.ROOT_ULLAT;
 
     static {
         depthLonDPP[0] = (INITLRLON - INITULLON) / MapServer.TILE_SIZE;
