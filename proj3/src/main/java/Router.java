@@ -32,7 +32,7 @@ public class Router {
      * @return A list of node id's in the order visited on the shortest path.
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat, double destlon,
-                                          double destlat) {
+            double destlat) {
         long stNode = g.closest(stlon, stlat);
         long destNode = g.closest(destlon, destlat);
         Map<Long, Long> edgeTo = new HashMap<>();
@@ -79,7 +79,7 @@ public class Router {
     }
 
     private static void relax(GraphDB g, Map<Long, Long> edgeTo, PriorityQueue<Long> pq, long v,
-                              long w, long destNode) {
+            long w, long destNode) {
         // dijkstra
         if (g.getDistTo(v) + g.distance(v, w) < g.getDistTo(w)) {
             g.changeDistTo(w, g.getDistTo(v) + g.distance(v, w));
