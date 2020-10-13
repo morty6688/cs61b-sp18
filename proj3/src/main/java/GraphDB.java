@@ -173,15 +173,6 @@ public class GraphDB {
      * @return The id of the node in the graph closest to the target.
      */
     long closest(double lon, double lat) {
-        // double dist = 1e9;
-        // long target = -1;
-        // for (Long node : nodes.keySet()) {
-        //     if (distance(lon, lat, lon(node), lat(node)) < dist) {
-        //         dist = distance(lon, lat, lon(node), lat(node));
-        //         target = node;
-        //     }
-        // }
-        // return target;
         return kdTreeForNearestNeighbor.nearest(lon, lat);
     }
 

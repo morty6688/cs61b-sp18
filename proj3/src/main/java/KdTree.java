@@ -1,13 +1,8 @@
 public class KdTree {
-    // private enum Separator {
-    //     VERTICAL, HORIZONTAL
-    // }
-
     private KdNode root;
     private int size;
 
     private static class KdNode {
-        // private final Separator sepr;
         private final GraphDB.Node point;
         private boolean compareX;
         private KdNode leftBottom;
@@ -17,22 +12,6 @@ public class KdTree {
             this.point = p;
             this.compareX = compareX;
         }
-
-        // public Separator nextSepr() {
-        //     return sepr == Separator.VERTICAL ? Separator.HORIZONTAL : Separator.VERTICAL;
-        // }
-
-        // public Rect rectLB() {
-        //     return sepr == Separator.VERTICAL
-        //             ? new Rect(rect.xmin(), rect.ymin(), p.lon, rect.ymax())
-        //             : new Rect(rect.xmin(), rect.ymin(), rect.xmax(), p.lat);
-        // }
-
-        // public Rect rectRT() {
-        //     return sepr == Separator.VERTICAL
-        //             ? new Rect(p.lon, rect.ymin(), rect.xmax(), rect.ymax())
-        //             : new Rect(rect.xmin(), p.lat, rect.xmax(), rect.ymax());
-        // }
 
         public boolean isRightOrTopOf(GraphDB.Node q) {
             return (compareX && point.lon > q.lon || (!compareX && point.lat > q.lat));
@@ -118,15 +97,19 @@ public class KdTree {
         }
 
         if (second == node.leftBottom) {
-            if (node.compareX && p.lon - node.point.lon >= bestDist)
+            if (node.compareX && p.lon - node.point.lon >= bestDist) {
                 return bestPoint;
-            if (!node.compareX && p.lat - node.point.lat >= bestDist)
+            }
+            if (!node.compareX && p.lat - node.point.lat >= bestDist) {
                 return bestPoint;
+            }
         } else if (second == node.rightTop) {
-            if (node.compareX && node.point.lon - p.lon >= bestDist)
+            if (node.compareX && node.point.lon - p.lon >= bestDist) {
                 return bestPoint;
-            if (!node.compareX && node.point.lat - p.lat >= bestDist)
+            }
+            if (!node.compareX && node.point.lat - p.lat >= bestDist) {
                 return bestPoint;
+            }
         }
         GraphDB.Node secondBestPoint = nearest(p, second, bestDist);
         if (secondBestPoint != null) {
@@ -134,27 +117,4 @@ public class KdTree {
         }
         return bestPoint;
     }
-
-    // private GraphDB.Node nearest(GraphDB.Node target, GraphDB.Node closest, KdNode node) {
-    //     if (node == null) {
-    //         return closest;
-    //     }
-    //     // Recursively search left/bottom or right/top
-    //     // if it could contain a closer point
-    //     double closestDist = GraphDB.distance(target.lon, target.lat, closest.lon, closest.lat);
-    //     if (node.rect.distanceTo(target.lon, target.lat) < closestDist) {
-    //         double nodeDist = GraphDB.distance(target.lon, target.lat, node.p.lon, node.p.lat);
-    //         if (nodeDist < closestDist) {
-    //             closest = node.p;
-    //         }
-    //         if (node.isRightOrTopOf(target.lon, target.lat)) {
-    //             closest = nearest(target, closest, node.leftBottom);
-    //             closest = nearest(target, closest, node.rightTop);
-    //         } else {
-    //             closest = nearest(target, closest, node.rightTop);
-    //             closest = nearest(target, closest, node.leftBottom);
-    //         }
-    //     }
-    //     return closest;
-    // }
 }
