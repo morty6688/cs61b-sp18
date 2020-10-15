@@ -29,24 +29,24 @@ public class Trie {
 
     private TrieNode root;
 
-    public void add(String cleanName, String name) {
-        root = add(root, cleanName, 0, name);
+    public Trie() {
+        root = new TrieNode();
     }
 
-    private TrieNode add(TrieNode cur, String key, int i, String name) {
-        if (cur == null) {
-            cur = new TrieNode();
-        }
-        if (i == key.length()) {
-            cur.isWord = true;
-            if (!cur.names.contains(name)) {
-                cur.names.add(name);
+    public void add(String key, String name) {
+        TrieNode cur = root;
+        for (int i = 0; i < key.length(); i++) {
+            char c = key.charAt(i);
+            if (cur.children.containsKey(c)) {
+                cur = cur.children.get(c);
+            } else {
+                TrieNode t = new TrieNode();
+                cur.children.put(c, t);
+                cur = t;
             }
-            return cur;
         }
-        char c = key.charAt(i);
-        cur.children.put(c, add(cur.children.get(c), key, i + 1, name));
-        return cur;
+        cur.names.add(name);
+        cur.isWord = true;
     }
 
     public TrieNode findNode(String key) {
